@@ -34,15 +34,17 @@ constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
     return output;
 }
 
-constexpr bool is_full_box(Mpeg4::BoxHeader::TypeTag tag)
+constexpr bool is_full_box(const Mpeg4::BoxHeader &box)
 {
 
 #define MAKE_TAG(str4bytes)                                                    \
-    Mpeg4::BoxHeader::TypeTag{                                                 \
-        str4bytes[0], str4bytes[1], str4bytes[2], str4bytes[3]}
+    Mpeg4::BoxHeader::TypeTag                                                  \
+    {                                                                          \
+        str4bytes[0], str4bytes[1], str4bytes[2], str4bytes[3]                 \
+    }
 
 #define CHECK_TAG(tag_to_check_str)                                            \
-    if (MAKE_TAG(tag_to_check_str) == tag) {                                   \
+    if (MAKE_TAG(tag_to_check_str) == box.type) {                              \
         return true;                                                           \
     }
 
@@ -198,42 +200,6 @@ void walk_boxes(
     }
 }
 
-std::string to_string_bytes(std::span<const std::byte> data)
-{
-    std::string data_copy;
-    std::ranges::copy(
-        data | std::views::transform(std::to_integer<char>),
-        std::back_inserter(data_copy));
-
-    for (auto &c : data_copy) {
-        if (!std::isprint(c)) {
-            c = '_';
-        }
-    }
-
-    return data_copy;
-}
-
-std::vector<std::string_view> split_lines(std::string_view source)
-{
-    std::vector<std::string_view> output;
-
-    size_t pos = 0;
-    size_t next = 0;
-
-    do {
-        next = source.find('\n', pos);
-        if (next == std::string_view::npos) {
-            return output;
-        }
-
-        output.emplace_back(source.substr(pos, next - pos));
-        pos = next + 1;
-    } while (1);
-
-    return output;
-}
-
 struct BoxToDumpData
 {
     size_t offset;
@@ -290,13 +256,24 @@ try {
         std::string addr_span_str = std::format(
             "0x{:x}-0x{:x}", dump_d.offset, dump_d.offset + dump_d.size);
 
+        auto header = dump_d.box.get_header();
+        if (!header) {
+            std::cerr << "Header retreave failue\n";
+            continue;
+        }
+
         std::format_to(
             std::back_inserter(output),
-            "{:{}} |{}{}",
+            "{:{}} |{}",
             addr_span_str,
             max_addr_fmtlen,
-            indent,
-            Mpeg4::dump(dump_d.box.get_header().value()));
+            indent);
+
+        if (is_full_box(header.value())) {
+            output.append(Mpeg4::dump(Mpeg4::FullBoxHeader(header.value())));
+        } else {
+            output.append(Mpeg4::dump(header.value()));
+        }
 
         auto ft_box = Mpeg4::BoxViewFileType(dump_d.box);
         if (ft_box.is_valid()) {

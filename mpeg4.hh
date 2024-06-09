@@ -8,6 +8,7 @@
 #include <optional>
 #include <ranges>
 #include <span>
+#include <stdexcept>
 #include <vector>
 
 #include "raw_data.hh"
@@ -32,6 +33,13 @@ struct BoxHeader
     std::optional<uint64_t> box_size;
     TypeTag type;
     std::optional<UserType> usertype;
+};
+
+struct FullBoxHeader
+{
+    BoxHeader header;
+    uint8_t version;
+    std::bitset<24> flags;
 };
 
 constexpr bool
@@ -137,9 +145,16 @@ struct FullBoxView
     {
     }
 
-    std::optional<BoxHeader> get_header() const
+    std::optional<FullBoxHeader> get_header() const
     {
-        return m_box.get_header();
+        auto header = m_box.get_header();
+        auto version = get_version();
+        auto flags = get_flags();
+        if (!header || !version || !flags) {
+            return std::nullopt;
+        }
+
+        return FullBoxHeader{header.value(), version.value(), flags.value()};
     }
 
     std::optional<std::span<const std::byte>> get_data() const

@@ -10,6 +10,57 @@
 
 namespace Mpeg4 {
 
+inline std::string dump_fields_only(const BoxHeader &box)
+{
+    std::array<char, 4> type_as_chars{};
+    std::ranges::fill(type_as_chars, 0);
+    std::ranges::copy(box.type.data, type_as_chars.begin());
+
+    std::string user_type_string;
+
+    if (box.usertype.has_value()) {
+        std::array<char, 8> user_type_chars;
+        std::ranges::fill(user_type_chars, 0);
+        std::ranges::copy(box.usertype->data, user_type_chars.begin());
+        user_type_string = std::format(", user_type: {}", user_type_chars);
+    }
+
+    std::string size_string;
+
+    if (box.box_size.has_value()) {
+        size_string = std::format(", size: {}", box.box_size.value());
+    }
+
+    std::string header_size_string;
+    if (box.header_size != 8) {
+        header_size_string = std::format(", header_size: {}", box.header_size);
+    }
+
+    return std::format(
+        "type: {:?s}{}{}{}",
+        type_as_chars,
+        header_size_string,
+        size_string,
+        user_type_string);
+}
+
+inline std::string dump_fields_only(const FullBoxHeader &box)
+{
+    return std::format(
+        "version: {}, flags: 0b{}", box.version, box.flags.to_string());
+}
+
+inline std::string dump(const BoxHeader &box)
+{
+    return std::format("{{{}}}", dump_fields_only(box));
+}
+
+inline std::string dump(const FullBoxHeader &box)
+{
+    return std::format(
+        "{{{}, {}}}", dump_fields_only(box.header), dump_fields_only(box));
+}
+
 inline std::string dump(const BoxViewFileType &file_type_box)
 {
     auto maj_brand = file_type_box.get_major_brand();
@@ -52,37 +103,4 @@ inline std::string dump(const BoxViewFileType &file_type_box)
         compatible_brands_string);
 }
 
-inline std::string dump(const BoxHeader &box)
-{
-    std::array<char, 4> type_as_chars{};
-    std::ranges::fill(type_as_chars, 0);
-    std::ranges::copy(box.type.data, type_as_chars.begin());
-
-    std::string user_type_string;
-
-    if (box.usertype.has_value()) {
-        std::array<char, 8> user_type_chars;
-        std::ranges::fill(user_type_chars, 0);
-        std::ranges::copy(box.usertype->data, user_type_chars.begin());
-        user_type_string = std::format(", user_type: {}", user_type_chars);
-    }
-
-    std::string size_string;
-
-    if (box.box_size.has_value()) {
-        size_string = std::format(", size: {}", box.box_size.value());
-    }
-
-    std::string header_size_string;
-    if (box.header_size != 8) {
-        header_size_string = std::format(", header_size: {}", box.header_size);
-    }
-
-    return std::format(
-        "{{type: {:?s}{}{}{}}}",
-        type_as_chars,
-        header_size_string,
-        size_string,
-        user_type_string);
-}
 } // namespace Mpeg4
