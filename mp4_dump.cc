@@ -12,7 +12,6 @@
 #include <string>
 #include <string_view>
 #include <strings.h>
-#include <utility>
 #include <vector>
 
 #include <cctype>
@@ -37,87 +36,98 @@ constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
 
 constexpr bool is_full_box(Mpeg4::BoxHeader::TypeTag tag)
 {
-    using Tag = Mpeg4::BoxHeader::TypeTag;
 
-    bool output = false;
-    output |= Tag{'a', 's', 's', 'p'} == tag;
-    output |= Tag{'b', 'x', 'm', 'l'} == tag;
-    output |= Tag{'c', 'h', 'n', 'l'} == tag;
-    output |= Tag{'c', 'o', '6', '4'} == tag;
-    output |= Tag{'c', 'p', 'r', 't'} == tag;
-    output |= Tag{'c', 's', 'l', 'g'} == tag;
-    output |= Tag{'c', 't', 't', 's'} == tag;
-    output |= Tag{'d', 'm', 'i', 'x'} == tag;
-    output |= Tag{'d', 'r', 'e', 'f'} == tag;
-    output |= Tag{'e', 'l', 'n', 'g'} == tag;
-    output |= Tag{'e', 'l', 's', 't'} == tag;
-    output |= Tag{'f', 'e', 'c', 'r'} == tag;
-    output |= Tag{'f', 'i', 'i', 'n'} == tag;
-    output |= Tag{'f', 'i', 'r', 'e'} == tag;
-    output |= Tag{'f', 'p', 'a', 'r'} == tag;
-    output |= Tag{'g', 'i', 't', 'n'} == tag;
-    output |= Tag{'h', 'd', 'l', 'r'} == tag;
-    output |= Tag{'h', 'm', 'h', 'd'} == tag;
-    output |= Tag{'i', 'i', 'n', 'f'} == tag;
-    output |= Tag{'i', 'l', 'o', 'c'} == tag;
-    output |= Tag{'i', 'n', 'f', 'e'} == tag;
-    output |= Tag{'i', 'p', 'r', 'o'} == tag;
-    output |= Tag{'i', 'r', 'e', 'f'} == tag;
-    output |= Tag{'k', 'i', 'n', 'd'} == tag;
-    output |= Tag{'l', 'e', 'v', 'a'} == tag;
-    output |= Tag{'m', 'd', 'h', 'd'} == tag;
-    output |= Tag{'m', 'e', 'h', 'd'} == tag;
-    output |= Tag{'m', 'e', 'r', 'e'} == tag;
-    output |= Tag{'m', 'e', 't', 'a'} == tag;
-    output |= Tag{'m', 'f', 'h', 'd'} == tag;
-    output |= Tag{'m', 'f', 'r', 'o'} == tag;
-    output |= Tag{'m', 'v', 'h', 'd'} == tag;
-    output |= Tag{'n', 'm', 'h', 'd'} == tag;
-    output |= Tag{'p', 'a', 'd', 'b'} == tag;
-    output |= Tag{'p', 'd', 'i', 'n'} == tag;
-    output |= Tag{'p', 'i', 't', 'm'} == tag;
-    output |= Tag{'p', 'r', 'f', 't'} == tag;
-    output |= Tag{'r', 'a', 'c', 'k'} == tag;
-    output |= Tag{'s', 'a', 'i', 'o'} == tag;
-    output |= Tag{'s', 'a', 'i', 'z'} == tag;
-    output |= Tag{'s', 'b', 'g', 'p'} == tag;
-    output |= Tag{'s', 'c', 'h', 'm'} == tag;
-    output |= Tag{'s', 'd', 't', 'p'} == tag;
-    output |= Tag{'s', 'g', 'p', 'd'} == tag;
-    output |= Tag{'s', 'i', 'd', 'x'} == tag;
-    output |= Tag{'s', 'm', 'h', 'd'} == tag;
-    output |= Tag{'s', 'r', 'a', 't'} == tag;
-    output |= Tag{'s', 'r', 'p', 'p'} == tag;
-    output |= Tag{'s', 's', 'i', 'x'} == tag;
-    output |= Tag{'s', 't', 'c', 'o'} == tag;
-    output |= Tag{'s', 't', 'd', 'p'} == tag;
-    output |= Tag{'s', 't', 'h', 'd'} == tag;
-    output |= Tag{'s', 't', 'r', 'i'} == tag;
-    output |= Tag{'s', 't', 's', 'c'} == tag;
-    output |= Tag{'s', 't', 's', 'd'} == tag;
-    output |= Tag{'s', 't', 's', 'g'} == tag;
-    output |= Tag{'s', 't', 's', 'h'} == tag;
-    output |= Tag{'s', 't', 's', 's'} == tag;
-    output |= Tag{'s', 't', 's', 'z'} == tag;
-    output |= Tag{'s', 't', 't', 's'} == tag;
-    output |= Tag{'s', 't', 'v', 'i'} == tag;
-    output |= Tag{'s', 't', 'z', '2'} == tag;
-    output |= Tag{'s', 'u', 'b', 's'} == tag;
-    output |= Tag{'t', 'f', 'd', 't'} == tag;
-    output |= Tag{'t', 'f', 'h', 'd'} == tag;
-    output |= Tag{'t', 'f', 'r', 'a'} == tag;
-    output |= Tag{'t', 'k', 'h', 'd'} == tag;
-    output |= Tag{'t', 'r', 'e', 'p'} == tag;
-    output |= Tag{'t', 'r', 'e', 'x'} == tag;
-    output |= Tag{'t', 'r', 'u', 'n'} == tag;
-    output |= Tag{'t', 's', 'e', 'l'} == tag;
-    output |= Tag{'u', 'r', 'i', ' '} == tag;
-    output |= Tag{'u', 'r', 'i', 'I'} == tag;
-    output |= Tag{'u', 'r', 'l', ' '} == tag;
-    output |= Tag{'u', 'r', 'n', ' '} == tag;
-    output |= Tag{'v', 'm', 'h', 'd'} == tag;
-    output |= Tag{'x', 'm', 'l', ' '} == tag;
-    return output;
+#define MAKE_TAG(str4bytes)                                                    \
+    Mpeg4::BoxHeader::TypeTag{                                                 \
+        str4bytes[0], str4bytes[1], str4bytes[2], str4bytes[3]}
+
+#define CHECK_TAG(tag_to_check_str)                                            \
+    if (MAKE_TAG(tag_to_check_str) == tag) {                                   \
+        return true;                                                           \
+    }
+
+    CHECK_TAG("assp");
+    CHECK_TAG("bxml");
+    CHECK_TAG("chnl");
+    CHECK_TAG("co64");
+    CHECK_TAG("cprt");
+    CHECK_TAG("cslg");
+    CHECK_TAG("ctts");
+    CHECK_TAG("dmix");
+    CHECK_TAG("dref");
+    CHECK_TAG("elng");
+    CHECK_TAG("elst");
+    CHECK_TAG("fecr");
+    CHECK_TAG("fiin");
+    CHECK_TAG("fire");
+    CHECK_TAG("fpar");
+    CHECK_TAG("gitn");
+    CHECK_TAG("hdlr");
+    CHECK_TAG("hmhd");
+    CHECK_TAG("iinf");
+    CHECK_TAG("iloc");
+    CHECK_TAG("infe");
+    CHECK_TAG("ipro");
+    CHECK_TAG("iref");
+    CHECK_TAG("kind");
+    CHECK_TAG("leva");
+    CHECK_TAG("mdhd");
+    CHECK_TAG("mehd");
+    CHECK_TAG("mere");
+    CHECK_TAG("meta");
+    CHECK_TAG("mfhd");
+    CHECK_TAG("mfro");
+    CHECK_TAG("mvhd");
+    CHECK_TAG("nmhd");
+    CHECK_TAG("padb");
+    CHECK_TAG("pdin");
+    CHECK_TAG("pitm");
+    CHECK_TAG("prft");
+    CHECK_TAG("rack");
+    CHECK_TAG("saio");
+    CHECK_TAG("saiz");
+    CHECK_TAG("sbgp");
+    CHECK_TAG("schm");
+    CHECK_TAG("sdtp");
+    CHECK_TAG("sgpd");
+    CHECK_TAG("sidx");
+    CHECK_TAG("smhd");
+    CHECK_TAG("srat");
+    CHECK_TAG("srpp");
+    CHECK_TAG("ssix");
+    CHECK_TAG("stco");
+    CHECK_TAG("stdp");
+    CHECK_TAG("sthd");
+    CHECK_TAG("stri");
+    CHECK_TAG("stsc");
+    CHECK_TAG("stsd");
+    CHECK_TAG("stsg");
+    CHECK_TAG("stsh");
+    CHECK_TAG("stss");
+    CHECK_TAG("stsz");
+    CHECK_TAG("stts");
+    CHECK_TAG("stvi");
+    CHECK_TAG("stz2");
+    CHECK_TAG("subs");
+    CHECK_TAG("tfdt");
+    CHECK_TAG("tfhd");
+    CHECK_TAG("tfra");
+    CHECK_TAG("tkhd");
+    CHECK_TAG("trep");
+    CHECK_TAG("trex");
+    CHECK_TAG("trun");
+    CHECK_TAG("tsel");
+    CHECK_TAG("uri ");
+    CHECK_TAG("uriI");
+    CHECK_TAG("url ");
+    CHECK_TAG("urn ");
+    CHECK_TAG("vmhd");
+    CHECK_TAG("xml ");
+
+#undef MAKE_TAG
+#undef CHECK_TAG
+
+    return false;
 }
 
 using BoxCallback_t =
