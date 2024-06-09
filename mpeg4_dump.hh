@@ -9,6 +9,7 @@
 #include "mpeg4.hh"
 #include "mpeg4_ftype.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_tkhd.hh"
 
 namespace Mpeg4 {
 
@@ -175,6 +176,91 @@ inline std::string dump(const BoxViewMovieHeader &mvhdr_type_box)
         matrix.value(),
         pre_defined.value(),
         next_track_ID.value());
+}
+
+inline std::string dump(const BoxViewTrackHeader &tkhd_type_box)
+{
+    auto creation_time = tkhd_type_box.get_creation_time();
+    auto modification_time = tkhd_type_box.get_modification_time();
+    auto track_ID = tkhd_type_box.get_track_ID();
+    auto reserved_0 = tkhd_type_box.get_reserved_0();
+    auto duration = tkhd_type_box.get_duration();
+    auto reserved_1 = tkhd_type_box.get_reserved_1();
+    auto layer = tkhd_type_box.get_layer();
+    auto alternate_group = tkhd_type_box.get_alternate_group();
+    auto volume = tkhd_type_box.get_volume();
+    auto reserved_2 = tkhd_type_box.get_reserved_2();
+    auto matrix = tkhd_type_box.get_matrix();
+    auto width = tkhd_type_box.get_width();
+    auto height = tkhd_type_box.get_height();
+
+    std::string error_message = "Mpeg4::dump(BoxViewTrackHeader): ";
+
+    if (!creation_time) {
+        throw std::runtime_error(
+            error_message + "creation_time" + " parse failue");
+    }
+    if (!modification_time) {
+        throw std::runtime_error(
+            error_message + "modification_time" + " parse failue");
+    }
+    if (!track_ID) {
+        throw std::runtime_error(error_message + "track_ID" + " parse failue");
+    }
+    if (!reserved_0) {
+        throw std::runtime_error(
+            error_message + "reserved_0" + " parse failue");
+    }
+    if (!duration) {
+        throw std::runtime_error(error_message + "duration" + " parse failue");
+    }
+    if (!reserved_1) {
+        throw std::runtime_error(
+            error_message + "reserved_1" + " parse failue");
+    }
+    if (!layer) {
+        throw std::runtime_error(error_message + "layer" + " parse failue");
+    }
+    if (!alternate_group) {
+        throw std::runtime_error(
+            error_message + "alternate_group" + " parse failue");
+    }
+    if (!volume) {
+        throw std::runtime_error(error_message + "volume" + " parse failue");
+    }
+    if (!reserved_2) {
+        throw std::runtime_error(
+            error_message + "reserved_2" + " parse failue");
+    }
+    if (!matrix) {
+        throw std::runtime_error(error_message + "matrix" + " parse failue");
+    }
+    if (!width) {
+        throw std::runtime_error(error_message + "width" + " parse failue");
+    }
+    if (!height) {
+        throw std::runtime_error(error_message + "height" + " parse failue");
+    }
+
+    return std::format(
+        "{{creation_time: {}, modification_time: {}, track_ID: {}, reserved_0: "
+        "{}, duration: {}, reserved_1: {}, layer: {}, alternate_group: {}, "
+        "volume: {}, reserved_2: {}, matrix: {}, width: {}, height: {}}}",
+
+        creation_time.value(),
+        modification_time.value(),
+        track_ID.value(),
+        reserved_0.value(),
+        duration.value(),
+        reserved_1.value(),
+        layer.value(),
+        alternate_group.value(),
+        volume.value(),
+        reserved_2.value(),
+        matrix.value(),
+        width.value(),
+        height.value()
+    );
 }
 
 } // namespace Mpeg4

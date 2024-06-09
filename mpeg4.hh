@@ -5,6 +5,8 @@
 #include <bitset>
 #include <cstddef>
 #include <cstdint>
+#include <format>
+#include <iostream>
 #include <optional>
 #include <ranges>
 #include <span>
@@ -199,18 +201,15 @@ struct FullBoxView
         }
 
         std::bitset<24> output = 0;
-        auto biset_data = box_data.subspan<1, 3>();
-
-        for (auto b : biset_data) {
-            output |= std::to_integer<uint8_t>(b);
-            output <<= 8;
-        }
+        auto bitset_data = box_data.subspan<1, 3>();
+        output |= std::to_integer<uint8_t>(bitset_data[0]) << (8 * 2);
+        output |= std::to_integer<uint8_t>(bitset_data[1]) << (8 * 1);
+        output |= std::to_integer<uint8_t>(bitset_data[2]) << (8 * 0);
         return output;
     }
 
   private:
     BoxView m_box;
 };
-
 
 }; // namespace Mpeg4

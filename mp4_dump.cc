@@ -26,6 +26,7 @@
 
 #include "file_view.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_tkhd.hh"
 
 constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
 {
@@ -272,7 +273,11 @@ try {
             indent);
 
         if (is_full_box(header.value())) {
-            output.append(Mpeg4::dump(Mpeg4::FullBoxHeader(header.value())));
+            auto full_header = Mpeg4::FullBoxView(dump_d.box).get_header();
+            if (full_header) {
+                output.append(Mpeg4::dump(full_header.value()));
+            }
+
         } else {
             output.append(Mpeg4::dump(header.value()));
         }
@@ -287,6 +292,12 @@ try {
         if (mvhd_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(mvhd_box));
+        }
+
+        auto tkhd_box = Mpeg4::BoxViewTrackHeader(dump_d.box);
+        if (tkhd_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(tkhd_box));
         }
 
         output.append("\n");
