@@ -1,5 +1,8 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
+#include <format>
 #include <stdexcept>
 #include <string>
 
@@ -7,7 +10,7 @@
 
 namespace Mpeg4 {
 
-std::string dump(const BoxViewFileType &file_type_box)
+inline std::string dump(const BoxViewFileType &file_type_box)
 {
     auto maj_brand = file_type_box.get_major_brand();
     if (!maj_brand) {
@@ -49,7 +52,7 @@ std::string dump(const BoxViewFileType &file_type_box)
         compatible_brands_string);
 }
 
-std::string dump(const BoxHeader &box)
+inline std::string dump(const BoxHeader &box)
 {
     std::array<char, 4> type_as_chars{};
     std::ranges::fill(type_as_chars, 0);
