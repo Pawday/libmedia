@@ -7,7 +7,6 @@
 #include <iterator>
 #include <optional>
 #include <print>
-#include <ranges>
 #include <span>
 #include <string>
 #include <string_view>
@@ -21,9 +20,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "file_view.hh"
 #include "mpeg4.hh"
 #include "mpeg4_dump.hh"
+#include "mpeg4_ftype.hh"
+
+#include "file_view.hh"
+#include "mpeg4_mvhd.hh"
 
 constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
 {
@@ -279,6 +281,12 @@ try {
         if (ft_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(ft_box));
+        }
+
+        auto mvhd_box = Mpeg4::BoxViewMovieHeader(dump_d.box);
+        if (mvhd_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(mvhd_box));
         }
 
         output.append("\n");
