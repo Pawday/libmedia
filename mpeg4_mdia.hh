@@ -40,7 +40,7 @@ struct BoxViewMediaHeader
         required_size +=
             2; // 1 (pad_bit) + 5 * 3 (language bits) = 16 bits -> 2 bytes
         required_size += sizeof(uint16_t); // pre_defined
-        if (required_size < data->size()) {
+        if (required_size > data->size()) {
             return false;
         }
 
@@ -197,10 +197,6 @@ struct BoxViewMediaHeader
 
         output[2] = std::to_integer<uint8_t>(compressed_output[1]);
         output[2] &= 0b00011111;
-
-        for (auto &o : output) {
-            o += 0x60;
-        }
 
         return output;
     }

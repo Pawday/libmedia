@@ -3,11 +3,13 @@
 #include <algorithm>
 #include <array>
 #include <format>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 
 #include "mpeg4.hh"
 #include "mpeg4_ftype.hh"
+#include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_tkhd.hh"
@@ -316,6 +318,44 @@ inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
         pad.value(),
         language.value(),
         pre_defined.value());
+}
+
+inline std::string dump(const BoxViewHandler &hdlr_type_box)
+{
+    auto pre_defined = hdlr_type_box.get_pre_defined();
+    auto handler_type = hdlr_type_box.get_handler_type();
+    auto reserved = hdlr_type_box.get_reserved();
+    auto name = hdlr_type_box.get_name_span();
+
+    std::string error_message = "Mpeg4::dump(BoxViewHandler): ";
+
+    if (!pre_defined) {
+        throw std::runtime_error(
+            error_message + "pre_defined" + " parse failue");
+    }
+
+    if (!handler_type) {
+        throw std::runtime_error(
+            error_message + "handler_type" + " parse failue");
+    }
+
+    if (!reserved) {
+        throw std::runtime_error(error_message + "reserved" + " parse failue");
+    }
+
+    if (!name) {
+        throw std::runtime_error(error_message + "name" + " parse failue");
+    }
+
+    std::string name_str;
+    std::ranges::copy(name.value(), std::back_inserter(name_str));
+
+    return std::format(
+        "{{pre_defined: {}, handler_type: {}, reserved: {}, name: {:?}}}",
+        pre_defined.value(),
+        handler_type.value(),
+        reserved.value(),
+        name_str);
 }
 
 } // namespace Mpeg4

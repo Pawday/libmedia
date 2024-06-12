@@ -25,6 +25,7 @@
 #include "mpeg4_ftype.hh"
 
 #include "file_view.hh"
+#include "mpeg4_hdlr.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_tkhd.hh"
 #include "mpeg4_mdia.hh"
@@ -305,6 +306,12 @@ try {
         if (mdia_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(mdia_box));
+        }
+
+        auto hdlr_box = Mpeg4::BoxViewHandler(dump_d.box);
+        if (hdlr_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(hdlr_box));
         }
 
         output.append("\n");

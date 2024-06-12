@@ -1,18 +1,20 @@
 #pragma once
 
-#include "mpeg4.hh"
-#include "raw_data.hh"
 #include <array>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <utility>
+
+#include <cstddef>
+#include <cstdint>
+
+#include "mpeg4.hh"
+#include "raw_data.hh"
 
 namespace Mpeg4 {
 
 struct BoxViewTrackHeader
 {
-    constexpr static BoxHeader::TypeTag mvhd_tag = {'t', 'k', 'h', 'd'};
+    constexpr static BoxHeader::TypeTag tkhd_tag = {'t', 'k', 'h', 'd'};
 
     BoxViewTrackHeader(FullBoxView box) : m_box(box)
     {
@@ -44,12 +46,12 @@ struct BoxViewTrackHeader
         required_size += sizeof(uint32_t) * 9; // matrix
         required_size += sizeof(uint32_t);     // width
         required_size += sizeof(uint32_t);     // height
-        if (required_size < data->size()) {
+        if (required_size > data->size()) {
             return false;
         }
 
         BoxHeader base_header = full_header->header;
-        if (full_header->header.type != mvhd_tag) {
+        if (full_header->header.type != tkhd_tag) {
             return false;
         }
 

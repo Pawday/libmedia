@@ -1,10 +1,11 @@
 #pragma once
 
 #include <array>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <utility>
+
+#include <cstddef>
+#include <cstdint>
 
 #include "mpeg4.hh"
 #include "raw_data.hh"
@@ -44,7 +45,7 @@ struct BoxViewMovieHeader
         required_size += sizeof(uint32_t) * 9; // matrix
         required_size += sizeof(uint32_t) * 6; // pre_defined
         required_size += sizeof(uint32_t);     // next_track_ID
-        if (required_size < data->size()) {
+        if (required_size > data->size()) {
             return false;
         }
 
