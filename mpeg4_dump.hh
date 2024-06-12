@@ -2,16 +2,21 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <format>
 #include <iterator>
+#include <ranges>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "mpeg4.hh"
 #include "mpeg4_ftype.hh"
 #include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_stco_co64.hh"
 #include "mpeg4_tkhd.hh"
 
 namespace Mpeg4 {
@@ -356,6 +361,56 @@ inline std::string dump(const BoxViewHandler &hdlr_type_box)
         handler_type.value(),
         reserved.value(),
         name_str);
+}
+
+inline std::string dump(const BoxViewChunkOffset &stco_type_box)
+{
+    auto entry_count = stco_type_box.get_entry_count();
+
+    std::string error_message = "Mpeg4::dump(BoxViewChunkOffset): ";
+    if (!entry_count) {
+        throw std::runtime_error(
+            error_message + "entry_count" + " parse failue");
+    }
+
+    std::string offsets_str_arr = "[";
+    for (size_t off = 0; off < entry_count; off++) {
+        if (off != 0) {
+            offsets_str_arr.append(", ");
+        }
+        std::format_to(
+            std::back_inserter(offsets_str_arr),
+            "0x{:x}",
+            stco_type_box.get_chunk_offset_unsafe(off));
+    }
+
+    offsets_str_arr.append("]");
+    return std::format("{{chunk_offset: {}}}", offsets_str_arr);
+}
+
+inline std::string dump(const BoxViewChunkLargeOffset &co64_type_box)
+{
+    auto entry_count = co64_type_box.get_entry_count();
+
+    std::string error_message = "Mpeg4::dump(BoxViewChunkLargeOffset): ";
+    if (!entry_count) {
+        throw std::runtime_error(
+            error_message + "entry_count" + " parse failue");
+    }
+
+    std::string offsets_str_arr = "[";
+    for (size_t off = 0; off < entry_count; off++) {
+        if (off != 0) {
+            offsets_str_arr.append(", ");
+        }
+        std::format_to(
+            std::back_inserter(offsets_str_arr),
+            "0x{:x}",
+            co64_type_box.get_chunk_offset_unsafe(off));
+    }
+
+    offsets_str_arr.append("]");
+    return std::format("{{large_chunk_offset: {}}}", offsets_str_arr);
 }
 
 } // namespace Mpeg4

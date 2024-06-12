@@ -26,9 +26,9 @@
 
 #include "file_view.hh"
 #include "mpeg4_hdlr.hh"
+#include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_tkhd.hh"
-#include "mpeg4_mdia.hh"
 
 constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
 {
@@ -312,6 +312,18 @@ try {
         if (hdlr_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(hdlr_box));
+        }
+
+        auto stco_box = Mpeg4::BoxViewChunkOffset(dump_d.box);
+        if (stco_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(stco_box));
+        }
+
+        auto co64_box = Mpeg4::BoxViewChunkLargeOffset(dump_d.box);
+        if (co64_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(co64_box));
         }
 
         output.append("\n");
