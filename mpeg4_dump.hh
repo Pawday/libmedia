@@ -8,6 +8,7 @@
 
 #include "mpeg4.hh"
 #include "mpeg4_ftype.hh"
+#include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_tkhd.hh"
 
@@ -124,32 +125,34 @@ inline std::string dump(const BoxViewMovieHeader &mvhdr_type_box)
 
     if (!creation_time) {
         throw std::runtime_error(
-            error_message + "creation_time" + "parse failue");
+            error_message + "creation_time" + " parse failue");
     }
     if (!modification_time) {
         throw std::runtime_error(
-            error_message + "modification_time" + "parse failue");
+            error_message + "modification_time" + " parse failue");
     }
     if (!timescale) {
-        throw std::runtime_error(error_message + "timescale" + "parse failue");
+        throw std::runtime_error(error_message + "timescale" + " parse failue");
     }
     if (!duration) {
-        throw std::runtime_error(error_message + "duration" + "parse failue");
+        throw std::runtime_error(error_message + "duration" + " parse failue");
     }
     if (!rate) {
-        throw std::runtime_error(error_message + "rate" + "parse failue");
+        throw std::runtime_error(error_message + "rate" + " parse failue");
     }
     if (!volume) {
-        throw std::runtime_error(error_message + "volume" + "parse failue");
+        throw std::runtime_error(error_message + "volume" + " parse failue");
     }
     if (!reserved_0) {
-        throw std::runtime_error(error_message + "reserved_0" + "parse failue");
+        throw std::runtime_error(
+            error_message + "reserved_0" + " parse failue");
     }
     if (!reserved_1) {
-        throw std::runtime_error(error_message + "reserved_1" + "parse failue");
+        throw std::runtime_error(
+            error_message + "reserved_1" + " parse failue");
     }
     if (!matrix) {
-        throw std::runtime_error(error_message + "matrix" + "parse failue");
+        throw std::runtime_error(error_message + "matrix" + " parse failue");
     }
     if (!pre_defined) {
         throw std::runtime_error(
@@ -259,8 +262,60 @@ inline std::string dump(const BoxViewTrackHeader &tkhd_type_box)
         reserved_2.value(),
         matrix.value(),
         width.value(),
-        height.value()
-    );
+        height.value());
+}
+
+inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
+{
+    auto creation_time = mdia_type_box.get_creation_time();
+    auto modification_time = mdia_type_box.get_modification_time();
+    auto timescale = mdia_type_box.get_timescale();
+    auto duration = mdia_type_box.get_duration();
+    auto pad = mdia_type_box.get_pad();
+    auto language = mdia_type_box.get_language();
+    auto pre_defined = mdia_type_box.get_pre_defined();
+
+    std::string error_message = "Mpeg4::dump(BoxViewMediaHeader): ";
+
+    if (!creation_time) {
+        throw std::runtime_error(
+            error_message + "creation_time" + " parse failue");
+    }
+    if (!modification_time) {
+        throw std::runtime_error(
+            error_message + "modification_time" + " parse failue");
+    }
+    if (!timescale) {
+        throw std::runtime_error(error_message + "timescale" + " parse failue");
+    }
+    if (!duration) {
+        throw std::runtime_error(error_message + "duration" + " parse failue");
+    }
+
+    if (!pad.has_value()) {
+        throw std::runtime_error(error_message + "pad" + " parse failue");
+    }
+
+    if (!language) {
+        throw std::runtime_error(error_message + "language" + " parse failue");
+    }
+
+    if (!pre_defined) {
+        throw std::runtime_error(
+            error_message + "pre_defined" + " parse failue");
+    }
+
+    return std::format(
+        "{{creation_time: {}, modification_time: {}, timescale: {}, duration: "
+        "{}, pad: {}, language: {}, pre_defined: {}}}",
+
+        creation_time.value(),
+        modification_time.value(),
+        timescale.value(),
+        duration.value(),
+        pad.value(),
+        language.value(),
+        pre_defined.value());
 }
 
 } // namespace Mpeg4

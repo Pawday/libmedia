@@ -27,6 +27,7 @@
 #include "file_view.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_tkhd.hh"
+#include "mpeg4_mdia.hh"
 
 constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
 {
@@ -298,6 +299,12 @@ try {
         if (tkhd_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(tkhd_box));
+        }
+
+        auto mdia_box = Mpeg4::BoxViewMediaHeader(dump_d.box);
+        if (mdia_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(mdia_box));
         }
 
         output.append("\n");
