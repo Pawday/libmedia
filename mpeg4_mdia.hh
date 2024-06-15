@@ -13,7 +13,7 @@ namespace Mpeg4 {
 
 struct BoxViewMediaHeader
 {
-    constexpr static BoxHeader::TypeTag mdia_tag = {'m', 'd', 'h', 'd'};
+    constexpr static BoxHeader::TypeTag mdia_tag = make_tag("mdhd");
 
     BoxViewMediaHeader(FullBoxView box) : m_box(box)
     {
@@ -159,7 +159,9 @@ struct BoxViewMediaHeader
         return (byte_with_pad_bit & 0b10000000) != 0;
     }
 
-    std::optional<std::array<char, 3>> get_language() const
+    // Each character is packed as the difference between its ASCII value and
+    // 0x60
+    std::optional<std::array<std::byte, 3>> get_language() const
     {
         if (is_not_valid()) {
             return std::nullopt;
@@ -168,7 +170,7 @@ struct BoxViewMediaHeader
             version_depended_header_size(m_box.get_version().value());
         auto data = m_box.get_data().value().subspan(offset);
 
-        std::array<char, 3> output;
+        std::array<std::byte, 3> output;
 
         /*
          * 0b0111112222233333
@@ -181,22 +183,22 @@ struct BoxViewMediaHeader
          */
         std::array<std::byte, 2> compressed_output = copy_array<2>(data);
 
-        output[0] = std::to_integer<uint8_t>(compressed_output[0]);
+        output[0] = compressed_output[0];
         output[0] >>= 2;
-        output[0] &= 0b00011111;
+        output[0] &= std::byte(0b00011111);
 
-        uint8_t output_1_msb = std::to_integer<uint8_t>(compressed_output[0]);
+        std::byte output_1_msb = compressed_output[0];
         output_1_msb <<= 3;
-        output_1_msb &= 0b00011000;
+        output_1_msb &= std::byte(0b00011000);
 
-        uint8_t output_1_lsb = std::to_integer<uint8_t>(compressed_output[1]);
+        std::byte output_1_lsb = compressed_output[1];
         output_1_lsb >>= 5;
-        output_1_lsb &= 0b00000111;
+        output_1_lsb &= std::byte(0b00000111);
 
         output[1] = output_1_msb | output_1_lsb;
 
-        output[2] = std::to_integer<uint8_t>(compressed_output[1]);
-        output[2] &= 0b00011111;
+        output[2] = compressed_output[1];
+        output[2] &= std::byte(0b00011111);
 
         return output;
     }

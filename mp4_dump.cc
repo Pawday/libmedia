@@ -28,6 +28,7 @@
 #include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
 
 constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
@@ -35,21 +36,15 @@ constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
     using Tag = Mpeg4::BoxHeader::TypeTag;
 
     bool output = true;
-    output &= Tag{'m', 'd', 'a', 't'} != tag;
+    output &= Mpeg4::make_tag("mdat") != tag;
     return output;
 }
 
 constexpr bool is_full_box(const Mpeg4::BoxHeader &box)
 {
 
-#define MAKE_TAG(str4bytes)                                                    \
-    Mpeg4::BoxHeader::TypeTag                                                  \
-    {                                                                          \
-        str4bytes[0], str4bytes[1], str4bytes[2], str4bytes[3]                 \
-    }
-
 #define CHECK_TAG(tag_to_check_str)                                            \
-    if (MAKE_TAG(tag_to_check_str) == box.type) {                              \
+    if (Mpeg4::make_tag(tag_to_check_str) == box.type) {                       \
         return true;                                                           \
     }
 
@@ -131,7 +126,6 @@ constexpr bool is_full_box(const Mpeg4::BoxHeader &box)
     CHECK_TAG("vmhd");
     CHECK_TAG("xml ");
 
-#undef MAKE_TAG
 #undef CHECK_TAG
 
     return false;
@@ -324,6 +318,12 @@ try {
         if (co64_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(co64_box));
+        }
+
+        auto stsz_box = Mpeg4::BoxViewSampleSize(dump_d.box);
+        if (stsz_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(stsz_box));
         }
 
         output.append("\n");

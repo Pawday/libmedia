@@ -14,7 +14,7 @@ namespace Mpeg4 {
 
 struct BoxViewMovieHeader
 {
-    constexpr static BoxHeader::TypeTag mvhd_tag = {'m', 'v', 'h', 'd'};
+    constexpr static BoxHeader::TypeTag mvhd_tag = make_tag("mvhd");
 
     BoxViewMovieHeader(FullBoxView box) : m_box(box)
     {

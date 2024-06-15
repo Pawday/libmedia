@@ -1,17 +1,13 @@
 #pragma once
 
-#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cstddef>
 #include <cstdint>
-#include <format>
-#include <iostream>
 #include <optional>
-#include <ranges>
 #include <span>
 #include <stdexcept>
-#include <vector>
+#include <string_view>
 
 #include "raw_data.hh"
 
@@ -36,6 +32,19 @@ struct BoxHeader
     TypeTag type;
     std::optional<UserType> usertype;
 };
+
+consteval BoxHeader::TypeTag make_tag(std::string_view s)
+{
+    if (s.size() != 4) {
+        throw std::runtime_error("Tag can only be 4 bytes long");
+    }
+
+    uint8_t b0 = s[0];
+    uint8_t b1 = s[1];
+    uint8_t b2 = s[2];
+    uint8_t b3 = s[3];
+    return BoxHeader::TypeTag{b0, b1, b2, b3};
+}
 
 struct FullBoxHeader
 {

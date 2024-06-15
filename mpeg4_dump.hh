@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -17,6 +18,7 @@
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
 #include "mpeg4_stco_co64.hh"
+#include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
 
 namespace Mpeg4 {
@@ -80,7 +82,7 @@ inline std::string dump(const BoxViewFileType &file_type_box)
             "Mpeg4::dump(BoxViewFileType): major_brand parse failue");
     }
 
-    auto version = file_type_box.get_major_brand();
+    auto version = file_type_box.get_minor_version();
     if (!version) {
         throw std::runtime_error(
             "Mpeg4::dump(BoxViewFileType): minor_version parse failue");
@@ -312,6 +314,31 @@ inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
             error_message + "pre_defined" + " parse failue");
     }
 
+    auto language_val = language.value();
+    std::array<char, 3> language_decoded;
+
+    std::ranges::copy(
+        language_val | std::views::transform(std::to_integer<char>),
+        begin(language_decoded));
+    std::ranges::for_each(language_decoded, [](char &c) { c += 0x60; });
+
+    std::string language_dump_val;
+
+    bool stringify_language = true;
+
+    stringify_language &= std::ranges::all_of(
+        language_val, [](std::byte c) { return c != std::byte(0); });
+
+    stringify_language &= std::ranges::all_of(
+        language_decoded, [](char c) { return std::isprint(c); });
+
+    if (stringify_language) {
+        language_dump_val = std::format("\"{:s}\"", language_decoded);
+    } else {
+        language_dump_val = std::format(
+            "{}", language_val | std::views::transform(std::to_integer<uint8_t>));
+    }
+
     return std::format(
         "{{creation_time: {}, modification_time: {}, timescale: {}, duration: "
         "{}, pad: {}, language: {}, pre_defined: {}}}",
@@ -321,7 +348,7 @@ inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
         timescale.value(),
         duration.value(),
         pad.value(),
-        language.value(),
+        language_dump_val,
         pre_defined.value());
 }
 
@@ -373,19 +400,7 @@ inline std::string dump(const BoxViewChunkOffset &stco_type_box)
             error_message + "entry_count" + " parse failue");
     }
 
-    std::string offsets_str_arr = "[";
-    for (size_t off = 0; off < entry_count; off++) {
-        if (off != 0) {
-            offsets_str_arr.append(", ");
-        }
-        std::format_to(
-            std::back_inserter(offsets_str_arr),
-            "0x{:x}",
-            stco_type_box.get_chunk_offset_unsafe(off));
-    }
-
-    offsets_str_arr.append("]");
-    return std::format("{{chunk_offset: {}}}", offsets_str_arr);
+    return std::format("{{chunk_offsets_size: {}}}", entry_count.value());
 }
 
 inline std::string dump(const BoxViewChunkLargeOffset &co64_type_box)
@@ -398,19 +413,31 @@ inline std::string dump(const BoxViewChunkLargeOffset &co64_type_box)
             error_message + "entry_count" + " parse failue");
     }
 
-    std::string offsets_str_arr = "[";
-    for (size_t off = 0; off < entry_count; off++) {
-        if (off != 0) {
-            offsets_str_arr.append(", ");
-        }
-        std::format_to(
-            std::back_inserter(offsets_str_arr),
-            "0x{:x}",
-            co64_type_box.get_chunk_offset_unsafe(off));
+    return std::format("{{large_chunk_offsets_size: {}}}", entry_count.value());
+}
+
+inline std::string dump(const BoxViewSampleSize &stsz_type_box)
+{
+    auto samples_count = stsz_type_box.get_samples_count();
+    auto default_sample_size = stsz_type_box.get_default_sample_size();
+
+    std::string error_message = "Mpeg4::dump(BoxViewSampleSize): ";
+    if (!samples_count) {
+        throw std::runtime_error(
+            error_message + "samples_count" + " parse failue");
     }
 
-    offsets_str_arr.append("]");
-    return std::format("{{large_chunk_offset: {}}}", offsets_str_arr);
+    std::string default_sample_size_string;
+
+    if (default_sample_size.has_value()) {
+        default_sample_size_string = std::format(
+            ", default_sample_size: {}", default_sample_size.value());
+    }
+
+    return std::format(
+        "{{samples_count: {}{}}}",
+        samples_count.value(),
+        default_sample_size_string);
 }
 
 } // namespace Mpeg4

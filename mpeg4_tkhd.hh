@@ -14,7 +14,7 @@ namespace Mpeg4 {
 
 struct BoxViewTrackHeader
 {
-    constexpr static BoxHeader::TypeTag tkhd_tag = {'t', 'k', 'h', 'd'};
+    constexpr static BoxHeader::TypeTag tkhd_tag = make_tag("tkhd");
 
     BoxViewTrackHeader(FullBoxView box) : m_box(box)
     {
