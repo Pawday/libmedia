@@ -61,11 +61,11 @@ constexpr bool
 
 struct BoxView
 {
-    BoxView(std::span<const std::byte> data) : m_data(data)
+    constexpr BoxView(std::span<const std::byte> data) : m_data(data)
     {
     }
 
-    std::optional<BoxHeader> get_header() const
+    constexpr std::optional<BoxHeader> get_header() const
     {
         auto data = m_data;
         uint8_t header_size = 0;
@@ -116,18 +116,25 @@ struct BoxView
         }
 
         if (size.has_value()) {
-
-            if (*size < header_size) {
+            if (size.value() < header_size) {
+                if consteval {
+                    throw std::logic_error(
+                        /*
+                         * ISO/IEC 14496-12 4.2 Object Structure
+                         * size is an integer that specifies the number of bytes
+                         * in this box, **including all its fields**
+                         */
+                        "size of the box is less than it's header size");
+                }
                 return std::nullopt;
             }
-
-            *size -= header_size;
+            size = size.value() - header_size;
         }
 
         return BoxHeader{header_size, size, type, user_type};
     }
 
-    std::optional<std::span<const std::byte>> get_data() const
+    constexpr std::optional<std::span<const std::byte>> get_data() const
     {
         auto header = get_header();
         if (!header) {
