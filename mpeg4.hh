@@ -4,6 +4,7 @@
 #include <bitset>
 #include <cstddef>
 #include <cstdint>
+#include <expected>
 #include <optional>
 #include <span>
 #include <stdexcept>
@@ -65,7 +66,16 @@ struct BoxView
     {
     }
 
-    constexpr std::optional<BoxHeader> get_header() const
+    enum class GetHeaderError
+    {
+        NO_SIZE_DATA,
+        NO_TAG_DATA,
+        NO_BIG_SIZE_DATA,
+        NO_UUID_DATA,
+        INVALID_SIZE,
+    };
+
+    constexpr std::expected<BoxHeader, GetHeaderError> get_header() const
     {
         auto data = m_data;
         uint8_t header_size = 0;
@@ -73,14 +83,14 @@ struct BoxView
         std::optional<BoxHeader::UserType> user_type;
 
         if (data.size() < sizeof(uint32_t)) {
-            return std::nullopt;
+            return std::unexpected(GetHeaderError::NO_SIZE_DATA);
         }
         uint32_t size_32 = read_be<uint32_t>(data);
         data = data.subspan(sizeof(uint32_t));
         header_size += sizeof(uint32_t);
 
         if (data.size() < 4) {
-            return std::nullopt;
+            return std::unexpected(GetHeaderError::NO_TAG_DATA);
         }
         std::array<std::uint8_t, 4> type_data =
             to_uint8_arr(copy_array<4>(data));
@@ -91,7 +101,7 @@ struct BoxView
 
         if (size_32 == 1) {
             if (data.size() < sizeof(uint64_t)) {
-                return std::nullopt;
+                return std::unexpected(GetHeaderError::NO_BIG_SIZE_DATA);
             }
 
             size = read_be<uint64_t>(data);
@@ -104,7 +114,7 @@ struct BoxView
 
         if (type == BoxHeader::uuid) {
             if (data.size() < 16) {
-                return std::nullopt;
+                return std::unexpected(GetHeaderError::NO_UUID_DATA);
             }
 
             std::array<std::uint8_t, 16> user_type_data =
@@ -117,16 +127,12 @@ struct BoxView
 
         if (size.has_value()) {
             if (size.value() < header_size) {
-                if consteval {
-                    throw std::logic_error(
-                        /*
-                         * ISO/IEC 14496-12 4.2 Object Structure
-                         * size is an integer that specifies the number of bytes
-                         * in this box, **including all its fields**
-                         */
-                        "size of the box is less than it's header size");
-                }
-                return std::nullopt;
+                /*
+                 * ISO/IEC 14496-12 4.2 Object Structure
+                 * size is an integer that specifies the number of bytes
+                 * in this box, **including all its fields**
+                 */
+                return std::unexpected(GetHeaderError::INVALID_SIZE);
             }
             size = size.value() - header_size;
         }
