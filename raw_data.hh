@@ -9,12 +9,6 @@
 #include <ranges>
 #include <span>
 
-struct Segment
-{
-    uint64_t start;
-    uint64_t size;
-};
-
 struct U64Storage
 {
     uint8_t b0;
