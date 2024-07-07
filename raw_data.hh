@@ -108,7 +108,7 @@ constexpr std::array<std::uint8_t, S>
 template <std::unsigned_integral T, size_t EXT>
 constexpr T read_be(std::span<const std::byte, EXT> data)
 {
-    T output = from_array_as_le<uint32_t>(copy_array<sizeof(uint32_t)>(data));
+    T output = from_array_as_le<T>(copy_array<sizeof(T)>(data));
     output = betoh(output);
     return output;
 }
