@@ -25,7 +25,7 @@ constexpr auto header = *box.get_header();
 
 static_assert(header.header_size == 8);
 static_assert(header.box_size == 4);
-static_assert(header.type == Mpeg4::make_tag("test"));
+static_assert(header.type == Mpeg4::TypeTag::from_str("test"));
 static_assert(!header.usertype.has_value());
 static_assert(header.box_size.has_value());
 

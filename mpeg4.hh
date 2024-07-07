@@ -17,6 +17,19 @@ namespace Mpeg4 {
 struct TypeTag
 {
     std::array<uint8_t, 4> data;
+
+    static consteval TypeTag from_str(std::string_view s)
+    {
+        if (s.size() != 4) {
+            throw std::runtime_error("Tag can only be 4 bytes long");
+        }
+
+        uint8_t b0 = s[0];
+        uint8_t b1 = s[1];
+        uint8_t b2 = s[2];
+        uint8_t b3 = s[3];
+        return TypeTag{b0, b1, b2, b3};
+    }
 };
 
 struct BoxHeader
@@ -26,26 +39,13 @@ struct BoxHeader
         std::array<uint8_t, 16> data;
     };
 
-    static constexpr TypeTag uuid{'u', 'u', 'i', 'd'};
+    static constexpr TypeTag uuid = TypeTag::from_str("uuid");
 
     uint8_t header_size;
     std::optional<uint64_t> box_size;
     TypeTag type;
     std::optional<UserType> usertype;
 };
-
-consteval TypeTag make_tag(std::string_view s)
-{
-    if (s.size() != 4) {
-        throw std::runtime_error("Tag can only be 4 bytes long");
-    }
-
-    uint8_t b0 = s[0];
-    uint8_t b1 = s[1];
-    uint8_t b2 = s[2];
-    uint8_t b3 = s[3];
-    return TypeTag{b0, b1, b2, b3};
-}
 
 struct FullBoxHeader
 {
@@ -54,8 +54,7 @@ struct FullBoxHeader
     std::bitset<24> flags;
 };
 
-constexpr bool
-    operator==(const TypeTag &lhs, const TypeTag &rhs)
+constexpr bool operator==(const TypeTag &lhs, const TypeTag &rhs)
 {
     return lhs.data == rhs.data;
 };

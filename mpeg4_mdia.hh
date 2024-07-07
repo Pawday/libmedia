@@ -13,7 +13,7 @@ namespace Mpeg4 {
 
 struct BoxViewMediaHeader
 {
-    constexpr static TypeTag mdia_tag = make_tag("mdhd");
+    constexpr static TypeTag mdia_tag = TypeTag::from_str("mdhd");
 
     BoxViewMediaHeader(FullBoxView box) : m_box(box)
     {

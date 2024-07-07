@@ -10,7 +10,7 @@ namespace Mpeg4 {
 
 struct BoxViewChunkOffset
 {
-    constexpr static TypeTag stco_tag = make_tag("stco");
+    constexpr static TypeTag stco_tag = TypeTag::from_str("stco");
 
     BoxViewChunkOffset(FullBoxView box) : m_box(box)
     {
@@ -99,7 +99,7 @@ struct BoxViewChunkOffset
 
 struct BoxViewChunkLargeOffset
 {
-    constexpr static TypeTag co64_tag = make_tag("co64");
+    constexpr static TypeTag co64_tag = TypeTag::from_str("co64");
 
     BoxViewChunkLargeOffset(FullBoxView box) : m_box(box)
     {

@@ -36,7 +36,7 @@ constexpr bool is_container_box(Mpeg4::TypeTag tag)
     using Tag = Mpeg4::TypeTag;
 
     bool output = true;
-    output &= Mpeg4::make_tag("mdat") != tag;
+    output &= Mpeg4::TypeTag::from_str("mdat") != tag;
     return output;
 }
 
@@ -44,7 +44,7 @@ constexpr bool is_full_box(const Mpeg4::BoxHeader &box)
 {
 
 #define CHECK_TAG(tag_to_check_str)                                            \
-    if (Mpeg4::make_tag(tag_to_check_str) == box.type) {                       \
+    if (Mpeg4::TypeTag::from_str(tag_to_check_str) == box.type) {                       \
         return true;                                                           \
     }
 
