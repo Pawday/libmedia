@@ -17,7 +17,9 @@
 #include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_sample_entry.hh"
 #include "mpeg4_stco_co64.hh"
+#include "mpeg4_stsd.hh"
 #include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
 
@@ -336,7 +338,8 @@ inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
         language_dump_val = std::format("\"{:s}\"", language_decoded);
     } else {
         language_dump_val = std::format(
-            "{}", language_val | std::views::transform(std::to_integer<uint8_t>));
+            "{}",
+            language_val | std::views::transform(std::to_integer<uint8_t>));
     }
 
     return std::format(
@@ -438,6 +441,62 @@ inline std::string dump(const BoxViewSampleSize &stsz_type_box)
         "{{samples_count: {}{}}}",
         samples_count.value(),
         default_sample_size_string);
+}
+
+inline std::string dump(const SampleEntryBoxView sample_entry)
+{
+    std::string err_prefix = "Mpeg4::dump(SampleEntryBoxView)";
+
+    auto header = sample_entry.get_box_header();
+    auto reserved = sample_entry.get_reserved();
+    auto data_reference_index = sample_entry.get_data_reference_index();
+    if (!header) {
+        throw std::runtime_error(std::format("{}: No header", err_prefix));
+    }
+    if (!reserved) {
+        throw std::runtime_error(std::format("{}: No reserved", err_prefix));
+    }
+    if (!data_reference_index) {
+        throw std::runtime_error(
+            std::format("{}: No data_reference_index", err_prefix));
+    }
+
+    auto reserved_int_view =
+        reserved.value() | std::views::transform(std::to_integer<uint16_t>);
+
+    return std::format(
+        "{{header: {}, reserved: {}, data_reference_index: {}}}",
+        dump(header.value()),
+        reserved_int_view,
+        data_reference_index.value());
+}
+
+inline std::string dump(const BoxViewSampleDescription &stsd_type_box)
+{
+    std::string err_prefix = "Mpeg4::dump(BoxViewSampleDescription)";
+
+    auto entries_opt = stsd_type_box.get_entries();
+    if (!entries_opt) {
+        throw std::runtime_error(
+            std::format("{}: get_entries failue", err_prefix));
+    }
+
+    std::string output = "{entries: [";
+
+    auto entries = entries_opt.value();
+
+    bool first = true;
+    for (auto entry : entries) {
+        if (!first) {
+            output.append(", ");
+        }
+        output.append(dump(entry));
+        first = false;
+    }
+
+    output.append("]}");
+
+    return output;
 }
 
 } // namespace Mpeg4

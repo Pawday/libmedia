@@ -28,6 +28,7 @@
 #include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_stsd.hh"
 #include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
 
@@ -37,6 +38,7 @@ constexpr bool is_container_box(Mpeg4::TypeTag tag)
 
     bool output = true;
     output &= Mpeg4::TypeTag::from_str("mdat") != tag;
+    output &= Mpeg4::TypeTag::from_str("stsd") != tag;
     return output;
 }
 
@@ -44,7 +46,7 @@ constexpr bool is_full_box(const Mpeg4::BoxHeader &box)
 {
 
 #define CHECK_TAG(tag_to_check_str)                                            \
-    if (Mpeg4::TypeTag::from_str(tag_to_check_str) == box.type) {                       \
+    if (Mpeg4::TypeTag::from_str(tag_to_check_str) == box.type) {              \
         return true;                                                           \
     }
 
@@ -183,15 +185,15 @@ void walk_boxes(
                 cb(user_data, box_view, offset, boxes_stack.size() - 1);
             }
 
+            if (!header.box_size.has_value()) {
+                boxes_stack.pop_back();
+                break;
+            }
+
+            active_box_data = active_box_data.subspan(header.box_size.value());
+
             bool go_deeper = is_container_box(header.type) && type_is_printable;
             if (go_deeper) {
-                if (!header.box_size.has_value()) {
-                    boxes_stack.pop_back();
-                    break;
-                }
-                active_box_data =
-                    active_box_data.subspan(header.box_size.value());
-
                 boxes_stack.push_back({box_data});
                 break;
             }
@@ -324,6 +326,12 @@ try {
         if (stsz_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(stsz_box));
+        }
+
+        auto stsd_box = Mpeg4::BoxViewSampleDescription(dump_d.box);
+        if (stsd_box.is_valid()) {
+            std::format_to(
+                std::back_inserter(output), ",{}", Mpeg4::dump(stsd_box));
         }
 
         output.append("\n");
