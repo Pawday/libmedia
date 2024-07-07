@@ -31,9 +31,9 @@
 #include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
 
-constexpr bool is_container_box(Mpeg4::BoxHeader::TypeTag tag)
+constexpr bool is_container_box(Mpeg4::TypeTag tag)
 {
-    using Tag = Mpeg4::BoxHeader::TypeTag;
+    using Tag = Mpeg4::TypeTag;
 
     bool output = true;
     output &= Mpeg4::make_tag("mdat") != tag;

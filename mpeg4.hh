@@ -14,13 +14,13 @@
 
 namespace Mpeg4 {
 
+struct TypeTag
+{
+    std::array<uint8_t, 4> data;
+};
+
 struct BoxHeader
 {
-    struct TypeTag
-    {
-        std::array<uint8_t, 4> data;
-    };
-
     struct UserType
     {
         std::array<uint8_t, 16> data;
@@ -34,7 +34,7 @@ struct BoxHeader
     std::optional<UserType> usertype;
 };
 
-consteval BoxHeader::TypeTag make_tag(std::string_view s)
+consteval TypeTag make_tag(std::string_view s)
 {
     if (s.size() != 4) {
         throw std::runtime_error("Tag can only be 4 bytes long");
@@ -44,7 +44,7 @@ consteval BoxHeader::TypeTag make_tag(std::string_view s)
     uint8_t b1 = s[1];
     uint8_t b2 = s[2];
     uint8_t b3 = s[3];
-    return BoxHeader::TypeTag{b0, b1, b2, b3};
+    return TypeTag{b0, b1, b2, b3};
 }
 
 struct FullBoxHeader
@@ -55,7 +55,7 @@ struct FullBoxHeader
 };
 
 constexpr bool
-    operator==(const BoxHeader::TypeTag &lhs, const BoxHeader::TypeTag &rhs)
+    operator==(const TypeTag &lhs, const TypeTag &rhs)
 {
     return lhs.data == rhs.data;
 };
@@ -97,7 +97,7 @@ struct BoxView
         data = data.subspan(4);
         header_size += 4;
 
-        BoxHeader::TypeTag type{type_data};
+        TypeTag type{type_data};
 
         if (size_32 == 1) {
             if (data.size() < sizeof(uint64_t)) {

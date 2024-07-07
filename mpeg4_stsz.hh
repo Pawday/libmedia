@@ -12,7 +12,7 @@ namespace Mpeg4 {
 
 struct BoxViewSampleSize
 {
-    constexpr static BoxHeader::TypeTag stsz_tag = make_tag("stsz");
+    constexpr static TypeTag stsz_tag = make_tag("stsz");
 
     BoxViewSampleSize(FullBoxView box) : m_box(box)
     {

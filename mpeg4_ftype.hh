@@ -16,7 +16,7 @@ namespace Mpeg4 {
 
 struct BoxViewFileType
 {
-    constexpr static BoxHeader::TypeTag ftyp_tag = make_tag("ftyp");
+    constexpr static TypeTag ftyp_tag = make_tag("ftyp");
     using Brand_t = std::array<char, 4>;
 
     bool validate() const
