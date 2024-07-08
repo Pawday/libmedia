@@ -49,6 +49,21 @@ static bool check(Mpeg4::BoxViewFileType box)
     return true;
 }
 
+static bool check(Mpeg4::BoxViewHandler box)
+{
+    auto name_opt = box.get_name_span();
+    if (!name_opt) {
+        return false;
+    }
+
+    auto name = name_opt.value();
+
+    if (!std::ranges::all_of(name, [](auto a) { return std::isprint(a); })) {
+        return false;
+    }
+    return true;
+}
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 {
     std::byte const *data = reinterpret_cast<const std::byte *>(Data);
@@ -98,6 +113,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
     if (hdlr_box.is_valid()) {
         std::format_to(
             std::back_inserter(output), ",{}", Mpeg4::dump(hdlr_box));
+
+        if (!check(hdlr_box)) {
+            return -1;
+        }
+        return 0;
     }
 
     auto stco_box = Mpeg4::BoxViewChunkOffset(box);
