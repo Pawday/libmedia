@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.20)
 
 project(libmedia VERSION 0.0.1)
 
+option(LIBMEDIA_BUILD_LLVM_FUZZ "" OFF)
 
+add_library(libmedia.headers INTERFACE)
+target_include_directories(libmedia.headers INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 function(target_cxx_23 TARGET)
     set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 23)
@@ -21,3 +24,8 @@ add_library(ct_tests OBJECT
 
 target_cxx_23(mp4_dump)
 target_cxx_23(ct_tests)
+
+
+if(LIBMEDIA_BUILD_LLVM_FUZZ)
+    add_subdirectory(llvm_fuzz)
+endif()

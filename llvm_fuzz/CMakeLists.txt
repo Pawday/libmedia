@@ -1,0 +1,5 @@
+add_executable(box_fuzz box.cc)
+target_cxx_23(box_fuzz)
+target_compile_options(box_fuzz PRIVATE "-fsanitize=fuzzer")
+target_link_options(box_fuzz PRIVATE "-fsanitize=fuzzer")
+target_link_libraries(box_fuzz PRIVATE libmedia.headers)
