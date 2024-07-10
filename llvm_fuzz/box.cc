@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <format>
 #include <iterator>
+#include <optional>
 #include <ranges>
 #include <span>
 
@@ -16,6 +17,7 @@
 #include "mpeg4_hdlr.hh"
 #include "mpeg4_mdia.hh"
 #include "mpeg4_mvhd.hh"
+#include "mpeg4_sample_entry.hh"
 #include "mpeg4_stsd.hh"
 #include "mpeg4_stsz.hh"
 #include "mpeg4_tkhd.hh"
@@ -62,6 +64,28 @@ static bool check(Mpeg4::BoxViewHandler box)
         return false;
     }
     return true;
+}
+
+static bool check(Mpeg4::BoxViewSampleDescription box)
+try {
+    auto entries = box.get_entries().value();
+
+    auto entry_is_printable = [](const Mpeg4::SampleEntryBoxView &b) {
+        auto header = b.get_box_header().value();
+        if (!std::ranges::all_of(
+                header.type.data, [](auto a) { return std::isprint(a); })) {
+            return false;
+        }
+        return true;
+    };
+
+    if (!std::ranges::any_of(entries, entry_is_printable)) {
+        return false;
+    }
+
+    return true;
+} catch (std::bad_optional_access &e) {
+    return false;
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
@@ -142,6 +166,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
     if (stsd_box.is_valid()) {
         std::format_to(
             std::back_inserter(output), ",{}", Mpeg4::dump(stsd_box));
+        if (!check(stsd_box)) {
+            return -1;
+        }
+        return 0;
     }
 
     return 0;
