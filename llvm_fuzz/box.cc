@@ -1,10 +1,8 @@
 #include <algorithm>
 #include <cctype>
-#include <ctype.h>
 #include <format>
 #include <iterator>
 #include <optional>
-#include <ranges>
 #include <span>
 
 #include <cstddef>

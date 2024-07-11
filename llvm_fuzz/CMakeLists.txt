@@ -1,5 +1,9 @@
+function(make_llvm_fuzz TARGET)
+    target_cxx_23(${TARGET})
+    target_compile_options(${TARGET} PRIVATE "-fsanitize=fuzzer")
+    target_link_options(${TARGET} PRIVATE "-fsanitize=fuzzer")
+    target_link_libraries(${TARGET} PRIVATE libmedia.headers)
+endfunction()
+
 add_executable(box_fuzz box.cc)
-target_cxx_23(box_fuzz)
-target_compile_options(box_fuzz PRIVATE "-fsanitize=fuzzer")
-target_link_options(box_fuzz PRIVATE "-fsanitize=fuzzer")
-target_link_libraries(box_fuzz PRIVATE libmedia.headers)
+make_llvm_fuzz(box_fuzz)
