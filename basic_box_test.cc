@@ -6,7 +6,7 @@
 #include <ranges>
 #include <span>
 
-#include "mpeg4.hh"
+#include "libmedia/mpeg4/mpeg4.hh"
 
 template <size_t SIZE>
 consteval auto as_bytes(const uint8_t (&d)[SIZE])

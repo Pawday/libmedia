@@ -9,16 +9,16 @@
 #include <cstdint>
 #include <vector>
 
-#include "mpeg4.hh"
-#include "mpeg4_dump.hh"
-#include "mpeg4_ftype.hh"
-#include "mpeg4_hdlr.hh"
-#include "mpeg4_mdia.hh"
-#include "mpeg4_mvhd.hh"
-#include "mpeg4_sample_entry.hh"
-#include "mpeg4_stsd.hh"
-#include "mpeg4_stsz.hh"
-#include "mpeg4_tkhd.hh"
+#include "libmedia/mpeg4/mpeg4.hh"
+#include "libmedia/mpeg4/mpeg4_dump.hh"
+#include "libmedia/mpeg4/mpeg4_ftype.hh"
+#include "libmedia/mpeg4/mpeg4_hdlr.hh"
+#include "libmedia/mpeg4/mpeg4_mdia.hh"
+#include "libmedia/mpeg4/mpeg4_mvhd.hh"
+#include "libmedia/mpeg4/mpeg4_sample_entry.hh"
+#include "libmedia/mpeg4/mpeg4_stsd.hh"
+#include "libmedia/mpeg4/mpeg4_stsz.hh"
+#include "libmedia/mpeg4/mpeg4_tkhd.hh"
 
 static bool check(Mpeg4::BoxViewFileType box)
 {
