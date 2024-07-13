@@ -14,11 +14,11 @@
 
 namespace Mpeg4 {
 
-struct BoxViewHandler
+struct HandlerBoxView
 {
     constexpr static TypeTag hdlr_tag = TypeTag::from_str("hdlr");
 
-    BoxViewHandler(FullBoxView box) : m_box(box)
+    HandlerBoxView(FullBoxView box) : m_box(box)
     {
     }
 

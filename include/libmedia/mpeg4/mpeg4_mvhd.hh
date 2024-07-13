@@ -12,11 +12,11 @@
 
 namespace Mpeg4 {
 
-struct BoxViewMovieHeader
+struct MovieHeaderBoxView
 {
     constexpr static TypeTag mvhd_tag = TypeTag::from_str("mvhd");
 
-    BoxViewMovieHeader(FullBoxView box) : m_box(box)
+    MovieHeaderBoxView(FullBoxView box) : m_box(box)
     {
     }
 

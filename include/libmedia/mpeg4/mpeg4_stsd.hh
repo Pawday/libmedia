@@ -1,20 +1,21 @@
 #pragma once
 
-#include "mpeg4.hh"
-#include "mpeg4_sample_entry.hh"
-#include "raw_data.hh"
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <vector>
 
+#include "mpeg4.hh"
+#include "mpeg4_sample_entry.hh"
+#include "raw_data.hh"
+
 namespace Mpeg4 {
 
-struct BoxViewSampleDescription
+struct SampleDescriptionBoxView
 {
     constexpr static TypeTag stbl_tag = TypeTag::from_str("stsd");
 
-    BoxViewSampleDescription(FullBoxView box) : m_box(box)
+    SampleDescriptionBoxView(FullBoxView box) : m_box(box)
     {
     }
 

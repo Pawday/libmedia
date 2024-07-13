@@ -14,7 +14,7 @@
 
 namespace Mpeg4 {
 
-struct BoxViewFileType
+struct FileTypeBoxView
 {
     constexpr static TypeTag ftyp_tag = TypeTag::from_str("ftyp");
     using Brand_t = std::array<char, 4>;
@@ -112,7 +112,7 @@ struct BoxViewFileType
         return output;
     }
 
-    BoxViewFileType(BoxView box) : m_box(box)
+    FileTypeBoxView(BoxView box) : m_box(box)
     {
     }
 

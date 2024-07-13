@@ -76,7 +76,7 @@ inline std::string dump(const FullBoxHeader &box)
         "{{{}, {}}}", dump_fields_only(box.header), dump_fields_only(box));
 }
 
-inline std::string dump(const BoxViewFileType &file_type_box)
+inline std::string dump(const FileTypeBoxView &file_type_box)
 {
     auto maj_brand = file_type_box.get_major_brand();
     if (!maj_brand) {
@@ -118,7 +118,7 @@ inline std::string dump(const BoxViewFileType &file_type_box)
         compatible_brands_string);
 }
 
-inline std::string dump(const BoxViewMovieHeader &mvhdr_type_box)
+inline std::string dump(const MovieHeaderBoxView &mvhdr_type_box)
 {
     auto creation_time = mvhdr_type_box.get_creation_time();
     auto modification_time = mvhdr_type_box.get_modification_time();
@@ -192,7 +192,7 @@ inline std::string dump(const BoxViewMovieHeader &mvhdr_type_box)
         next_track_ID.value());
 }
 
-inline std::string dump(const BoxViewTrackHeader &tkhd_type_box)
+inline std::string dump(const TrackHeaderBoxView &tkhd_type_box)
 {
     auto creation_time = tkhd_type_box.get_creation_time();
     auto modification_time = tkhd_type_box.get_modification_time();
@@ -276,7 +276,7 @@ inline std::string dump(const BoxViewTrackHeader &tkhd_type_box)
         height.value());
 }
 
-inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
+inline std::string dump(const MediaHeaderBoxView &mdia_type_box)
 {
     auto creation_time = mdia_type_box.get_creation_time();
     auto modification_time = mdia_type_box.get_modification_time();
@@ -355,7 +355,7 @@ inline std::string dump(const BoxViewMediaHeader &mdia_type_box)
         pre_defined.value());
 }
 
-inline std::string dump(const BoxViewHandler &hdlr_type_box)
+inline std::string dump(const HandlerBoxView &hdlr_type_box)
 {
     auto pre_defined = hdlr_type_box.get_pre_defined();
     auto handler_type = hdlr_type_box.get_handler_type();
@@ -393,7 +393,7 @@ inline std::string dump(const BoxViewHandler &hdlr_type_box)
         name_str);
 }
 
-inline std::string dump(const BoxViewChunkOffset &stco_type_box)
+inline std::string dump(const ChunkOffsetBoxView &stco_type_box)
 {
     auto entry_count = stco_type_box.get_entry_count();
 
@@ -406,7 +406,7 @@ inline std::string dump(const BoxViewChunkOffset &stco_type_box)
     return std::format("{{chunk_offsets_size: {}}}", entry_count.value());
 }
 
-inline std::string dump(const BoxViewChunkLargeOffset &co64_type_box)
+inline std::string dump(const ChunkOffset64BoxView &co64_type_box)
 {
     auto entry_count = co64_type_box.get_entry_count();
 
@@ -419,7 +419,7 @@ inline std::string dump(const BoxViewChunkLargeOffset &co64_type_box)
     return std::format("{{large_chunk_offsets_size: {}}}", entry_count.value());
 }
 
-inline std::string dump(const BoxViewSampleSize &stsz_type_box)
+inline std::string dump(const SampleSizeBoxView &stsz_type_box)
 {
     auto samples_count = stsz_type_box.get_samples_count();
     auto default_sample_size = stsz_type_box.get_default_sample_size();
@@ -471,7 +471,7 @@ inline std::string dump(const SampleEntryBoxView sample_entry)
         data_reference_index.value());
 }
 
-inline std::string dump(const BoxViewSampleDescription &stsd_type_box)
+inline std::string dump(const SampleDescriptionBoxView &stsd_type_box)
 {
     std::string err_prefix = "Mpeg4::dump(BoxViewSampleDescription)";
 

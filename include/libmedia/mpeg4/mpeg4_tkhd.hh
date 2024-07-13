@@ -12,11 +12,11 @@
 
 namespace Mpeg4 {
 
-struct BoxViewTrackHeader
+struct TrackHeaderBoxView
 {
     constexpr static TypeTag tkhd_tag = TypeTag::from_str("tkhd");
 
-    BoxViewTrackHeader(FullBoxView box) : m_box(box)
+    TrackHeaderBoxView(FullBoxView box) : m_box(box)
     {
     }
 

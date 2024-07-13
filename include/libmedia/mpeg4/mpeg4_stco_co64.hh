@@ -8,11 +8,11 @@
 
 namespace Mpeg4 {
 
-struct BoxViewChunkOffset
+struct ChunkOffsetBoxView
 {
     constexpr static TypeTag stco_tag = TypeTag::from_str("stco");
 
-    BoxViewChunkOffset(FullBoxView box) : m_box(box)
+    ChunkOffsetBoxView(FullBoxView box) : m_box(box)
     {
     }
 
@@ -97,11 +97,11 @@ struct BoxViewChunkOffset
     FullBoxView m_box;
 };
 
-struct BoxViewChunkLargeOffset
+struct ChunkOffset64BoxView
 {
     constexpr static TypeTag co64_tag = TypeTag::from_str("co64");
 
-    BoxViewChunkLargeOffset(FullBoxView box) : m_box(box)
+    ChunkOffset64BoxView(FullBoxView box) : m_box(box)
     {
     }
 

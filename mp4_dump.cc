@@ -281,55 +281,55 @@ try {
             output.append(Mpeg4::dump(header.value()));
         }
 
-        auto ft_box = Mpeg4::BoxViewFileType(dump_d.box);
+        auto ft_box = Mpeg4::FileTypeBoxView(dump_d.box);
         if (ft_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(ft_box));
         }
 
-        auto mvhd_box = Mpeg4::BoxViewMovieHeader(dump_d.box);
+        auto mvhd_box = Mpeg4::MovieHeaderBoxView(dump_d.box);
         if (mvhd_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(mvhd_box));
         }
 
-        auto tkhd_box = Mpeg4::BoxViewTrackHeader(dump_d.box);
+        auto tkhd_box = Mpeg4::TrackHeaderBoxView(dump_d.box);
         if (tkhd_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(tkhd_box));
         }
 
-        auto mdia_box = Mpeg4::BoxViewMediaHeader(dump_d.box);
+        auto mdia_box = Mpeg4::MediaHeaderBoxView(dump_d.box);
         if (mdia_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(mdia_box));
         }
 
-        auto hdlr_box = Mpeg4::BoxViewHandler(dump_d.box);
+        auto hdlr_box = Mpeg4::HandlerBoxView(dump_d.box);
         if (hdlr_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(hdlr_box));
         }
 
-        auto stco_box = Mpeg4::BoxViewChunkOffset(dump_d.box);
+        auto stco_box = Mpeg4::ChunkOffsetBoxView(dump_d.box);
         if (stco_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(stco_box));
         }
 
-        auto co64_box = Mpeg4::BoxViewChunkLargeOffset(dump_d.box);
+        auto co64_box = Mpeg4::ChunkOffset64BoxView(dump_d.box);
         if (co64_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(co64_box));
         }
 
-        auto stsz_box = Mpeg4::BoxViewSampleSize(dump_d.box);
+        auto stsz_box = Mpeg4::SampleSizeBoxView(dump_d.box);
         if (stsz_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(stsz_box));
         }
 
-        auto stsd_box = Mpeg4::BoxViewSampleDescription(dump_d.box);
+        auto stsd_box = Mpeg4::SampleDescriptionBoxView(dump_d.box);
         if (stsd_box.is_valid()) {
             std::format_to(
                 std::back_inserter(output), ",{}", Mpeg4::dump(stsd_box));

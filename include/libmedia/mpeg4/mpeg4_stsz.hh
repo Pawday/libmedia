@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -10,11 +9,11 @@
 
 namespace Mpeg4 {
 
-struct BoxViewSampleSize
+struct SampleSizeBoxView
 {
     constexpr static TypeTag stsz_tag = TypeTag::from_str("stsz");
 
-    BoxViewSampleSize(FullBoxView box) : m_box(box)
+    SampleSizeBoxView(FullBoxView box) : m_box(box)
     {
     }
 
