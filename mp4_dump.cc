@@ -21,15 +21,15 @@
 #include <cstring>
 
 #include "libmedia/mpeg4.hh"
-#include "libmedia/mpeg4/mpeg4_dump.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_ftype.hh"
+#include "libmedia/mpeg4/dump.hh"
 
-#include "libmedia/mpeg4/box/views/mpeg4_hdlr.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_mdia.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_mvhd.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_stsd.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_stsz.hh"
-#include "libmedia/mpeg4/box/views/mpeg4_tkhd.hh"
+#include "libmedia/mpeg4/box/views/ftype.hh"
+#include "libmedia/mpeg4/box/views/hdlr.hh"
+#include "libmedia/mpeg4/box/views/mdia.hh"
+#include "libmedia/mpeg4/box/views/mvhd.hh"
+#include "libmedia/mpeg4/box/views/stsd.hh"
+#include "libmedia/mpeg4/box/views/stsz.hh"
+#include "libmedia/mpeg4/box/views/tkhd.hh"
 
 #include "file_view.hh"
 
