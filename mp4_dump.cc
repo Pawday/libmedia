@@ -206,7 +206,7 @@ struct BoxToDumpData
 {
     size_t offset;
     size_t size;
-    size_t level;
+    size_t depth_level;
     Mpeg4::BoxView box;
 };
 
@@ -252,7 +252,7 @@ try {
     for (auto &dump_d : boxes) {
 
         std::string indent;
-        indent.resize(dump_d.level);
+        indent.resize(dump_d.depth_level);
         std::ranges::fill(indent, '-');
 
         std::string addr_span_str = std::format(
