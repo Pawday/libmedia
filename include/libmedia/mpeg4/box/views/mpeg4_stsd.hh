@@ -5,9 +5,9 @@
 #include <optional>
 #include <vector>
 
-#include "mpeg4.hh"
-#include "mpeg4_sample_entry.hh"
-#include "raw_data.hh"
+#include "libmedia/mpeg4.hh"
+#include "libmedia/mpeg4/box/views/mpeg4_sample_entry.hh"
+#include "libmedia/raw_data.hh"
 
 namespace Mpeg4 {
 

@@ -6,8 +6,8 @@
 #include <optional>
 #include <utility>
 
-#include "mpeg4.hh"
-#include "raw_data.hh"
+#include "libmedia/mpeg4.hh"
+#include "libmedia/raw_data.hh"
 
 namespace Mpeg4 {
 
