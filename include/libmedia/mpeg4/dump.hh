@@ -13,13 +13,15 @@
 #include <vector>
 
 #include "libmedia/mpeg4.hh"
+
+#include "libmedia/mpeg4/box/views/SampleEntry.hh"
+
 #include "libmedia/mpeg4/box/views/co64.hh"
 #include "libmedia/mpeg4/box/views/ftype.hh"
 #include "libmedia/mpeg4/box/views/hdlr.hh"
 #include "libmedia/mpeg4/box/views/hdlr.hh"
 #include "libmedia/mpeg4/box/views/mdia.hh"
 #include "libmedia/mpeg4/box/views/mvhd.hh"
-#include "libmedia/mpeg4/box/views/sample_entry.hh"
 #include "libmedia/mpeg4/box/views/stco.hh"
 #include "libmedia/mpeg4/box/views/stsd.hh"
 #include "libmedia/mpeg4/box/views/stsz.hh"
