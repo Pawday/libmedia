@@ -40,13 +40,13 @@ static_assert(sizeof(U64Storage) == 8);
 static constexpr U64Storage incr_byte_sequence{
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
 
-constexpr bool is_le()
+consteval bool is_le()
 {
     uint64_t val = 0x7766554433221100;
     return std::bit_cast<U64Storage>(val) == incr_byte_sequence;
 }
 
-constexpr bool is_be()
+consteval bool is_be()
 {
     uint64_t val = 0x0011223344556677;
     return std::bit_cast<U64Storage>(val) == incr_byte_sequence;
