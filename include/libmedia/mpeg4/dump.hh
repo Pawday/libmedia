@@ -14,7 +14,7 @@
 
 #include "libmedia/mpeg4.hh"
 
-#include "libmedia/mpeg4/box/views/SampleEntry.hh"
+#include "libmedia/mpeg4/box/SampleEntryBoxView.hh"
 
 #include "libmedia/mpeg4/box/views/co64.hh"
 #include "libmedia/mpeg4/box/views/ftype.hh"

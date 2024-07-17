@@ -8,7 +8,7 @@
 #include "libmedia/mpeg4.hh"
 #include "libmedia/raw_data.hh"
 
-#include "libmedia/mpeg4/box/views/SampleEntry.hh"
+#include "libmedia/mpeg4/box/SampleEntryBoxView.hh"
 
 namespace Mpeg4 {
 
