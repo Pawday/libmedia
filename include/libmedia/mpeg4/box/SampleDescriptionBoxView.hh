@@ -69,7 +69,7 @@ struct SampleDescriptionBoxView
             auto entry_box_size = header->box_size;
             if (!entry_box_size.has_value()) {
                 // Unsized SampleEntry box
-                // make it impossible to index sequence of boxes
+                // make it impossible to index sequence of these boxes
                 return ValidateStatus::UNSIZED_SAMPLE_BOX;
             }
 
