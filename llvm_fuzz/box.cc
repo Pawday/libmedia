@@ -12,15 +12,14 @@
 #include "libmedia/mpeg4.hh"
 #include "libmedia/mpeg4/dump.hh"
 
+#include "libmedia/mpeg4/box/FileTypeBoxView.hh"
+#include "libmedia/mpeg4/box/HandlerBoxView.hh"
+#include "libmedia/mpeg4/box/MediaHeaderBoxView.hh"
+#include "libmedia/mpeg4/box/MovieHeaderBoxView.hh"
+#include "libmedia/mpeg4/box/SampleDescriptionBoxView.hh"
 #include "libmedia/mpeg4/box/SampleEntryBoxView.hh"
-
-#include "libmedia/mpeg4/box/views/ftype.hh"
-#include "libmedia/mpeg4/box/views/hdlr.hh"
-#include "libmedia/mpeg4/box/views/mdia.hh"
-#include "libmedia/mpeg4/box/views/mvhd.hh"
-#include "libmedia/mpeg4/box/views/stsd.hh"
-#include "libmedia/mpeg4/box/views/stsz.hh"
-#include "libmedia/mpeg4/box/views/tkhd.hh"
+#include "libmedia/mpeg4/box/SampleSizeBoxView.hh"
+#include "libmedia/mpeg4/box/TrackHeaderBoxView.hh"
 
 static bool check(Mpeg4::FileTypeBoxView box)
 {
