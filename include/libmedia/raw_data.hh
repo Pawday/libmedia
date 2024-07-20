@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -76,13 +77,14 @@ template <size_t S, size_t EXT>
 constexpr std::array<std::byte, S>
     copy_array(std::span<const std::byte, EXT> source)
 {
+    assert(source.size() >= S);
     std::array<std::byte, S> output;
     std::ranges::copy(source | std::views::take(S), std::begin(output));
     return output;
 }
 
 template <std::unsigned_integral I, size_t S>
-constexpr I from_array_as_le(std::array<std::byte, S> data)
+constexpr I from_array_as_le(const std::array<std::byte, S> data)
 {
     I output = 0;
 
