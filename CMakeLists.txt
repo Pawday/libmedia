@@ -13,10 +13,18 @@ function(target_cxx_23 TARGET)
     set_property(TARGET ${TARGET} PROPERTY CXX_EXTENSIONS OFF)
 endfunction()
 
-add_executable(mp4_dump mp4_dump.cc
-    file_view_mmap.cc
-    #file_view_std.cc
-)
+set(LIBMEDIA_FILEVIEW_USE_MMAP ON)
+if (WIN32)
+    set(LIBMEDIA_FILEVIEW_USE_MMAP OFF)
+endif()
+
+add_executable(mp4_dump mp4_dump.cc)
+
+if (${LIBMEDIA_FILEVIEW_USE_MMAP})
+    target_sources(mp4_dump PRIVATE file_view_mmap.cc)
+else()
+    target_sources(mp4_dump PRIVATE file_view_std.cc)
+endif()
 
 target_link_libraries(mp4_dump PRIVATE libmedia.headers)
 
