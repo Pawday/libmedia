@@ -163,8 +163,7 @@ void walk_boxes(
 
         while (active_box_data.size() > 0) {
 
-            size_t offset =
-                std::distance(std::begin(data), std::begin(active_box_data));
+            size_t offset = active_box_data.data() - data.data();
 
             auto box_view = Mpeg4::BoxView(active_box_data);
 
