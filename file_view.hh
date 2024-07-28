@@ -16,8 +16,7 @@ struct alignas(8) FileView
     size_t size() const;
 
   private:
-    static constexpr size_t impl_size = 32;
+    static constexpr size_t impl_size = 64;
     struct Impl;
     char impl[impl_size];
-
 };
