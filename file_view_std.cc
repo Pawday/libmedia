@@ -15,18 +15,16 @@
 #include <cstdint>
 
 namespace {
-std::optional<std::vector<uint8_t>> load_file(std::string_view file_name)
+std::optional<std::vector<uint8_t>> load_file(const char *file_name)
 {
     std::vector<uint8_t> output;
 
     std::ifstream f;
-    f.open(file_name);
+    f.open(file_name, f.binary);
 
     if (!f.is_open()) {
         return std::nullopt;
     }
-
-    f.tellg();
 
     std::array<char, 8196> read_buff;
     size_t readen = 0;
