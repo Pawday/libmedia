@@ -18,46 +18,42 @@ set(LIBMEDIA_FILEVIEW_USE_WIN32 OFF)
 set(LIBMEDIA_FILEVIEW_USE_STD OFF)
 
 set(LIBMEDIA_FILEVIEW_AUTODETECT ON)
-set(LIBMEDIA_FILEVIEW_AUTODETECT_DONE OFF)
-
 if (${LIBMEDIA_FILEVIEW_USE_MMAP} OR ${LIBMEDIA_FILEVIEW_USE_WIN32} OR ${LIBMEDIA_FILEVIEW_USE_STD})
     set(LIBMEDIA_FILEVIEW_AUTODETECT OFF)
 endif()
 
-if (WIN32 AND ${LIBMEDIA_FILEVIEW_AUTODETECT} AND NOT ${LIBMEDIA_FILEVIEW_AUTODETECT_DONE})
-    set(LIBMEDIA_FILEVIEW_USE_WIN32 ON)
-    set(LIBMEDIA_FILEVIEW_AUTODETECT_DONE ON)
+if(${LIBMEDIA_FILEVIEW_AUTODETECT})
+    if (WIN32)
+        set(LIBMEDIA_FILEVIEW_USE_WIN32 ON)
+    elseif(UNIX)
+        set(LIBMEDIA_FILEVIEW_USE_MMAP ON)
+    else()
+        set(LIBMEDIA_FILEVIEW_USE_STD ON)
+    endif()
 endif()
-
-if (UNIX AND ${LIBMEDIA_FILEVIEW_AUTODETECT} AND NOT ${LIBMEDIA_FILEVIEW_AUTODETECT_DONE})
-    set(LIBMEDIA_FILEVIEW_USE_MMAP ON)
-    set(LIBMEDIA_FILEVIEW_AUTODETECT_DONE ON)
-endif()
-
-if (NOT ${LIBMEDIA_FILEVIEW_AUTODETECT_DONE})
-    set(LIBMEDIA_FILEVIEW_USE_STD ON)
-    set(LIBMEDIA_FILEVIEW_AUTODETECT_DONE ON)
-endif()
-
 
 add_executable(mp4_dump mp4_dump.cc)
 
+
+add_library(libmedia.fileview STATIC)
+target_cxx_23(libmedia.fileview)
+
 if (${LIBMEDIA_FILEVIEW_USE_WIN32})
     message(STATUS "Use WINAPI for FileView")
-    target_sources(mp4_dump PRIVATE file_view_win32.cc)
+    target_sources(libmedia.fileview PRIVATE file_view_win32.cc)
 endif()
 
 if (${LIBMEDIA_FILEVIEW_USE_MMAP})
     message(STATUS "Use Posix API for FileView")
-    target_sources(mp4_dump PRIVATE file_view_mmap.cc)
+    target_sources(libmedia.fileview PRIVATE file_view_mmap.cc)
 endif()
 
 if(${LIBMEDIA_FILEVIEW_USE_STD})
     message(WARNING "Use c++ API for FileView (slow)")
-    target_sources(mp4_dump PRIVATE file_view_std.cc)
+    target_sources(libmedia.fileview PRIVATE file_view_std.cc)
 endif()
 
-target_link_libraries(mp4_dump PRIVATE libmedia.headers)
+target_link_libraries(mp4_dump PRIVATE libmedia.headers libmedia.fileview)
 
 add_library(ct_tests OBJECT
     basic_box_test.cc 
