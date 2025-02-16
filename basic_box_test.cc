@@ -24,13 +24,13 @@ constexpr Mpeg4::BoxView box(test_box_data);
 constexpr auto header = *box.get_header();
 
 static_assert(header.header_size == 8);
-static_assert(header.box_size == 4);
+static_assert(header.box_content_size == 4);
 static_assert(header.type == Mpeg4::TypeTag::from_str("test"));
 static_assert(!header.usertype.has_value());
-static_assert(header.box_size.has_value());
+static_assert(header.box_content_size.has_value());
 
-constexpr auto data = *box.get_data();
-static_assert(data.size() == header.box_size);
+constexpr auto data = *box.get_content_data();
+static_assert(data.size() == header.box_content_size);
 static_assert(data[0] == std::byte(1));
 static_assert(data[1] == std::byte(2));
 static_assert(data[2] == std::byte(3));

@@ -66,7 +66,7 @@ struct SampleDescriptionBoxView
                 return ValidateStatus::NO_NEXT_SAMPLE_BOX;
             }
 
-            auto entry_box_size = header->box_size;
+            auto entry_box_size = header->box_content_size;
             if (!entry_box_size.has_value()) {
                 // Unsized SampleEntry box
                 // make it impossible to index sequence of these boxes
@@ -147,7 +147,7 @@ struct SampleDescriptionBoxView
                 return std::nullopt;
             }
 
-            auto entry_box_size = header->box_size;
+            auto entry_box_size = header->box_content_size;
             if (!entry_box_size.has_value()) {
                 // Unsized SampleEntry box
                 // make it impossible to index sequence of boxes

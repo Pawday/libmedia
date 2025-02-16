@@ -42,7 +42,7 @@ struct BoxHeader
     static constexpr TypeTag uuid = TypeTag::from_str("uuid");
 
     uint8_t header_size;
-    std::optional<uint64_t> box_size;
+    std::optional<uint64_t> box_content_size;
     TypeTag type;
     std::optional<UserType> usertype;
 };
@@ -139,20 +139,28 @@ struct BoxView
         return BoxHeader{header_size, size, type, user_type};
     }
 
-    constexpr std::optional<std::span<const std::byte>> get_data() const
+    enum class GetDataError
     {
-        auto header = get_header();
-        if (!header) {
-            return std::nullopt;
+        NO_HEADER,
+        BOX_DATA_SIZE_MISMATCH
+    };
+
+    constexpr std::expected<std::span<const std::byte>, GetDataError>
+        get_content_data() const
+    {
+        auto header_op = get_header();
+        if (!header_op) {
+            return std::unexpected(GetDataError::NO_HEADER);
+        }
+        auto header = header_op.value();
+
+        auto box_data = m_data.subspan(header.header_size);
+        if (box_data.size() < header.box_content_size) {
+            return std::unexpected(GetDataError::BOX_DATA_SIZE_MISMATCH);
         }
 
-        auto box_data = m_data.subspan(header->header_size);
-        if (box_data.size() < header->box_size) {
-            return std::nullopt;
-        }
-
-        if (header->box_size) {
-            box_data = box_data.subspan(0, *header->box_size);
+        if (header.box_content_size) {
+            box_data = box_data.subspan(0, header.box_content_size.value());
         }
 
         return box_data;
@@ -182,7 +190,7 @@ struct FullBoxView
 
     std::optional<std::span<const std::byte>> get_data() const
     {
-        auto box_data_opt = m_box.get_data();
+        auto box_data_opt = m_box.get_content_data();
         if (!box_data_opt) {
             return std::nullopt;
         }
@@ -196,7 +204,7 @@ struct FullBoxView
 
     std::optional<uint8_t> get_version() const
     {
-        auto box_data_opt = m_box.get_data();
+        auto box_data_opt = m_box.get_content_data();
         if (!box_data_opt) {
             return std::nullopt;
         }
@@ -211,7 +219,7 @@ struct FullBoxView
 
     std::optional<std::bitset<24>> get_flags() const
     {
-        auto box_data_opt = m_box.get_data();
+        auto box_data_opt = m_box.get_content_data();
         if (!box_data_opt) {
             return std::nullopt;
         }

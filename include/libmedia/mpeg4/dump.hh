@@ -44,8 +44,8 @@ inline std::string dump_fields_only(const BoxHeader &box)
 
     std::string size_string;
 
-    if (box.box_size.has_value()) {
-        size_string = std::format(", size: {}", box.box_size.value());
+    if (box.box_content_size.has_value()) {
+        size_string = std::format(", size: {}", box.box_content_size.value());
     }
 
     std::string header_size_string;

@@ -20,7 +20,7 @@ struct SampleEntryBoxView
     bool validate() const
     {
         auto box_header = m_box.get_header();
-        auto data = m_box.get_data();
+        auto data = m_box.get_content_data();
         if (!box_header || !data) {
             return false;
         }
@@ -64,7 +64,7 @@ struct SampleEntryBoxView
             return std::nullopt;
         }
 
-        auto data = m_box.get_data();
+        auto data = m_box.get_content_data();
         if (!data || data->size() < 6) {
             return std::nullopt;
         }
@@ -80,7 +80,7 @@ struct SampleEntryBoxView
 
         size_t read_offset = 6; // sizeof(reserved)
 
-        auto data = m_box.get_data();
+        auto data = m_box.get_content_data();
         if (!data || data->size() < sizeof(uint16_t) + read_offset) {
             return std::nullopt;
         }

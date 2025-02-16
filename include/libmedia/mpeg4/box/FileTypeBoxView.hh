@@ -22,7 +22,7 @@ struct FileTypeBoxView
     bool validate() const
     {
         auto header = m_box.get_header();
-        auto data = m_box.get_data();
+        auto data = m_box.get_content_data();
         if (!header || !data) {
             return false;
         }
@@ -59,7 +59,7 @@ struct FileTypeBoxView
             return std::nullopt;
         }
 
-        auto data = m_box.get_data();
+        auto data = m_box.get_content_data();
         if (!data) {
             return std::nullopt;
         }
@@ -80,7 +80,7 @@ struct FileTypeBoxView
         if (is_not_valid()) {
             return std::nullopt;
         }
-        return read_be<uint32_t>(m_box.get_data().value().subspan(4));
+        return read_be<uint32_t>(m_box.get_content_data().value().subspan(4));
     }
 
     std::optional<std::vector<Brand_t>> get_compatible_brands() const
@@ -90,7 +90,7 @@ struct FileTypeBoxView
         }
 
         std::vector<Brand_t> output;
-        auto brands_data = m_box.get_data().value().subspan(8);
+        auto brands_data = m_box.get_content_data().value().subspan(8);
 
         if (brands_data.size() % 4 != 0) {
             return std::nullopt;

@@ -32,9 +32,6 @@ if(${LIBMEDIA_FILEVIEW_AUTODETECT})
     endif()
 endif()
 
-add_executable(mp4_dump mp4_dump.cc)
-
-
 add_library(libmedia.fileview STATIC)
 target_cxx_23(libmedia.fileview)
 
@@ -53,16 +50,23 @@ if(${LIBMEDIA_FILEVIEW_USE_STD})
     target_sources(libmedia.fileview PRIVATE file_view_std.cc)
 endif()
 
+add_executable(mp4_dump mp4_dump.cc)
 target_link_libraries(mp4_dump PRIVATE libmedia.headers libmedia.fileview)
 
-add_library(ct_tests OBJECT
-    basic_box_test.cc 
-)
 
+
+add_executable(mp4_boxtree mp4_boxtree.cc)
+target_link_libraries(mp4_boxtree PRIVATE libmedia.headers libmedia.fileview)
+
+add_library(ct_tests OBJECT
+    basic_box_test.cc
+)
 
 target_link_libraries(ct_tests PRIVATE libmedia.headers)
 
 target_cxx_23(mp4_dump)
+target_cxx_23(mp4_boxtree)
+
 target_cxx_23(ct_tests)
 
 

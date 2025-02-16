@@ -8,6 +8,7 @@
 #include <optional>
 #include <print>
 #include <span>
+#include <stack>
 #include <string>
 #include <string_view>
 
@@ -148,16 +149,16 @@ void walk_boxes(
         std::span<const std::byte> data;
     };
 
-    std::vector<Frame> boxes_stack;
+    std::stack<Frame> boxes_stack;
 
-    boxes_stack.push_back({data});
+    boxes_stack.push({data});
 
     while (!boxes_stack.empty()) {
 
-        auto &active_box_data = boxes_stack.back().data;
+        auto &active_box_data = boxes_stack.top().data;
 
         if (active_box_data.size() == 0) {
-            boxes_stack.pop_back();
+            boxes_stack.pop();
             continue;
         }
 
@@ -168,9 +169,9 @@ void walk_boxes(
             auto box_view = Mpeg4::BoxView(active_box_data);
 
             auto header_opt = box_view.get_header();
-            auto box_data_opt = box_view.get_data();
+            auto box_data_opt = box_view.get_content_data();
             if (!header_opt || !box_data_opt) {
-                boxes_stack.pop_back();
+                boxes_stack.pop();
                 break;
             }
             auto header = header_opt.value();
@@ -188,16 +189,16 @@ void walk_boxes(
                 cb(user_data, box_view, offset, boxes_stack.size() - 1);
             }
 
-            if (!header.box_size.has_value()) {
-                boxes_stack.pop_back();
+            if (!header.box_content_size.has_value()) {
+                boxes_stack.pop();
                 break;
             }
 
-            active_box_data = active_box_data.subspan(header.box_size.value());
+            active_box_data = active_box_data.subspan(header.box_content_size.value());
 
             bool go_deeper = is_container_box(header.type) && type_is_printable;
             if (go_deeper) {
-                boxes_stack.push_back({box_data});
+                boxes_stack.push({box_data});
                 break;
             }
         }
@@ -219,7 +220,7 @@ void cb(void *data, Mpeg4::BoxView box, size_t offset, size_t level)
 
     vec.emplace_back(
         offset,
-        box.get_header()->header_size + box.get_data()->size(),
+        box.get_header()->header_size + box.get_content_data()->size(),
         level,
         box);
 }
