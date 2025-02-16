@@ -29,10 +29,6 @@ namespace Mpeg4 {
 
 inline std::string dump_fields_only(const BoxHeader &box)
 {
-    std::array<char, 4> type_as_chars{};
-    std::ranges::fill(type_as_chars, 0);
-    std::ranges::copy(box.type.data, type_as_chars.begin());
-
     std::string user_type_string;
 
     if (box.usertype.has_value()) {
@@ -53,8 +49,29 @@ inline std::string dump_fields_only(const BoxHeader &box)
         header_size_string = std::format(", header_size: {}", box.header_size);
     }
 
+    auto is_printable = [](auto a) { return std::isprint(a); };
+    bool type_printable = std::ranges::all_of(box.type.data, is_printable);
+
+    std::string type_as_chars;
+
+    if (type_printable) {
+        std::ranges::copy(box.type.data, std::back_inserter(type_as_chars));
+        type_as_chars = std::format("\"{}\"", type_as_chars);
+    } else {
+        bool first = true;
+        type_as_chars += '[';
+        for (uint8_t c : box.type.data) {
+            if (!first) {
+                type_as_chars += ", ";
+            }
+            first = false;
+            type_as_chars += std::format("0x{:x}", c);
+        }
+        type_as_chars += ']';
+    }
+
     return std::format(
-        "type: {:?s}{}{}{}",
+        "type: {}{}{}{}",
         type_as_chars,
         header_size_string,
         size_string,

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <deque>
 #include <exception>
 #include <format>
@@ -76,10 +77,19 @@ struct BoxWalker
         }
 
         auto box_size = header.value().box_content_size;
-
+        if (!box_size) {
+            /*
+             * ISO/IEC 14496-12:2015(E)
+             * box extends to end of file
+             *
+             * so no more boxes
+             */
+            m_data = {};
+            return;
+        }
         size_t offset = 0;
         offset += header.value().header_size;
-        offset += box_size.value_or(0);
+        offset += box_size.value();
         if (m_data.size() <= offset) {
             m_data = {};
             return;
@@ -120,60 +130,69 @@ try {
         auto current_box = current_box_op.value();
         top.select_next_box();
 
-        auto log_box_indented =
-            [&is_last_stack](size_t indent, Mpeg4::BoxView box, bool is_last) {
-                std::string indent_str;
+        auto log_box_indented = [&is_last_stack](
+                                    size_t indent,
+                                    Mpeg4::BoxView box,
+                                    bool is_last,
+                                    bool zero_mark) {
+            std::string indent_str;
 
-                if (is_last_stack.size() < indent + 1) {
-                    is_last_stack.resize(indent + 1);
-                }
+            if (is_last_stack.size() < indent + 1) {
+                is_last_stack.resize(indent + 1);
+            }
 
-                is_last_stack[indent] = is_last;
+            is_last_stack[indent] = is_last;
 
-                if (indent != 0) {
-                    for (size_t indent_level = 1; indent_level < indent;
-                         indent_level++) {
-                        if (is_last_stack[indent_level]) {
-                            indent_str += " ";
-                        } else {
-                            indent_str += "│";
-                        }
-                    }
-                    if (is_last) {
-                        indent_str += "└";
+            if (indent != 0) {
+                for (size_t indent_level = 1; indent_level < indent;
+                     indent_level++) {
+                    if (is_last_stack[indent_level]) {
+                        indent_str += " ";
                     } else {
-                        indent_str += "├";
+                        indent_str += "│";
                     }
                 }
+                if (is_last) {
+                    indent_str += "└";
+                } else {
+                    indent_str += "├";
+                }
+            }
 
-                auto a = box.get_header();
-                auto t = a.value().type;
+            auto a = box.get_header();
+            auto t = a.value().type;
 
-                std::string t_str;
+            const char *zero_warn = "";
+            if (zero_mark) {
+                zero_warn = " (zeros)";
+            }
 
-                std::ranges::for_each(t.data, [&t_str](char c) {
-                    if (std::isprint(c)) {
-                        t_str.push_back(c);
-                        return;
-                    }
-                    t_str.push_back('?');
-                });
-
-                std::cout << std::format("{}{:s}\n", indent_str, t_str);
-            };
-
-        log_box_indented(walker_stack.size(), current_box, !top.has_box());
+            std::cout << std::format(
+                "{} {:s}{}\n",
+                indent_str,
+                Mpeg4::dump(box.get_header().value()),
+                zero_warn);
+        };
 
         auto data = current_box.get_content_data();
+        bool zero_box = false;
+        if (data) {
+            auto is_zero = [](auto a) {
+                return std::to_integer<uint8_t>(a) == 0;
+            };
+            zero_box = std::ranges::all_of(data.value(), is_zero);
+        }
+
+        log_box_indented(
+            walker_stack.size(), current_box, !top.has_box(), zero_box);
 
         if (data) {
             BoxWalker child_walker{data.value()};
-            if (child_walker.has_box()) {
+            if (child_walker.has_box() && !zero_box) {
                 walker_stack.push(child_walker);
             }
         }
     }
-
 } catch (std::exception &e) {
     std::cout << std::format("Exception \"{}\"\n", e.what());
     return EXIT_FAILURE;

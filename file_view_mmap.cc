@@ -68,7 +68,7 @@ struct FileView::Impl
             std::string status_string = strerror(status);
             close(fd);
             throw std::invalid_argument(std::format(
-                "File \"{}\" mmap failue: status {}({})",
+                "File \"{}\" mmap failue: status {} ({})",
                 name,
                 status,
                 status_string));
