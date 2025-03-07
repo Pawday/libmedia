@@ -31,11 +31,32 @@ inline std::string dump_fields_only(const BoxHeader &box)
 {
     std::string user_type_string;
 
+    auto is_printable = [](auto a) { return std::isprint(a); };
+
     if (box.usertype.has_value()) {
-        std::array<char, 8> user_type_chars;
-        std::ranges::fill(user_type_chars, 0);
-        std::ranges::copy(box.usertype->data, user_type_chars.begin());
-        user_type_string = std::format(", user_type: {}", user_type_chars);
+
+        bool user_type_is_printable =
+            std::ranges::all_of(box.usertype->data, is_printable);
+
+        std::string user_type_data;
+
+        if (user_type_is_printable) {
+            std::ranges::copy(
+                box.usertype->data, std::back_inserter(user_type_data));
+        } else {
+            user_type_data += '[';
+            bool first = true;
+            for (auto c : box.usertype->data) {
+                if (!first) {
+                    user_type_data += ", ";
+                }
+                first = false;
+                user_type_data += std::format("0x{:x}", c);
+            }
+            user_type_data += ']';
+        }
+
+        user_type_string = std::format(", user_type: {}", user_type_data);
     }
 
     std::string size_string;
@@ -49,7 +70,6 @@ inline std::string dump_fields_only(const BoxHeader &box)
         header_size_string = std::format(", header_size: {}", box.header_size);
     }
 
-    auto is_printable = [](auto a) { return std::isprint(a); };
     bool type_printable = std::ranges::all_of(box.type.data, is_printable);
 
     std::string type_as_chars;
